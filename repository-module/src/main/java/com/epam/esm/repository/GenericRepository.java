@@ -1,22 +1,17 @@
 package com.epam.esm.repository;
 
-
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
 public interface GenericRepository<T> {
-
-    Connection getConnection() throws SQLException;
 
     List<T> findAll();
 
     T findById(Long id);
 
-    void add(T object);
+    Long add(T object);
 
-    void update(T object);
+    int update(T object);
 
-    void delete(T object);
+    int delete(T object);
 
 }

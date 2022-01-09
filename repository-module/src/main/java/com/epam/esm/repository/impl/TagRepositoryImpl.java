@@ -5,8 +5,13 @@ import com.epam.esm.repository.model.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -17,29 +22,79 @@ public class TagRepositoryImpl extends GenericRepositoryImpl<Tag> implements Tag
 
     @Override
     public List<Tag> findAll() {
+
         return jdbcTemplate.query("SELECT * FROM tag", new BeanPropertyRowMapper<>(Tag.class));
+    }
+
+    @Override
+    public Tag getTagByName(String name) {
+        return jdbcTemplate.query("SELECT * FROM tag WHERE name=?",
+                        new BeanPropertyRowMapper<>(Tag.class),
+                        name)
+                .stream().findAny().orElse(null);
+    }
+
+    @Override
+    public List<Tag> getAllTagByPageSorted(int startPosition, int itemsByPage) {
+        return jdbcTemplate.query("SELECT * FROM tag ORDER BY name ASC OFFSET ? LIMIT ?",
+                new BeanPropertyRowMapper<>(Tag.class),
+                startPosition,
+                itemsByPage);
+    }
+
+    @Override
+    public List<Tag> getAllTagSorted() {
+        return jdbcTemplate.query("SELECT * FROM tag ORDER BY name ASC",
+                new BeanPropertyRowMapper<>(Tag.class));
+    }
+
+    @Override
+    public List<Tag> updateTagList(List<Tag> tagList) {
+        List<Tag> resultList = new ArrayList<>();
+        for (Tag tag : tagList) {
+            Tag tagBD = getTagByName(tag.getName());
+            if (tagBD == null) {
+                tagBD = Tag.builder()
+                        .id(add(tag))
+                        .name(tag.getName())
+                        .build();
+            }
+            resultList.add(tagBD);
+        }
+        return resultList;
     }
 
     @Override
     public Tag findById(Long id) {
         return jdbcTemplate.query("SELECT * FROM tag WHERE id=?",
-                        new Object[]{id},
-                        new BeanPropertyRowMapper<>(Tag.class))
+                        new BeanPropertyRowMapper<>(Tag.class),
+                        id)
                 .stream().findAny().orElse(null);
     }
 
     @Override
-    public void add(Tag Tag) {
-        jdbcTemplate.update("INSERT INTO tag (name) VALUES(?)", Tag.getName());
+    public Long add(Tag tag) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        String query = "INSERT INTO tag (name) VALUES(?)";
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection
+                    .prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, tag.getName());
+            return ps;
+        }, keyHolder);
+        if (keyHolder.getKeys() != null) {
+            return (long) keyHolder.getKeys().get("id");
+        }
+        return null;
     }
 
     @Override
-    public void update(Tag Tag) {
-        jdbcTemplate.update("UPDATE tag SET name=? WHERE id=?", Tag.getName(), Tag.getId());
+    public int update(Tag Tag) {
+        return jdbcTemplate.update("UPDATE tag SET name=? WHERE id=?", Tag.getName(), Tag.getId());
     }
 
     @Override
-    public void delete(Tag Tag) {
-        jdbcTemplate.update("DELETE FROM tag WHERE id=?", Tag.getId());
+    public int delete(Tag Tag) {
+        return jdbcTemplate.update("DELETE FROM tag WHERE id=?", Tag.getId());
     }
 }

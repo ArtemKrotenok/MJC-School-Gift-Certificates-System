@@ -1,11 +1,16 @@
 package com.epam.esm.service;
 
-import com.epam.esm.repository.model.Tag;
-
-import java.util.List;
+import com.epam.esm.service.model.TagDTO;
 
 public interface TagService {
 
-    List<Tag> getAll();
+    String add(TagDTO tagDTO);
 
+    String getAllTagsByPageSorted(Integer page);
+
+    String getAllTagsSorted();
+
+    String findById(Long id);
+
+    String deleteById(Long id);
 }

@@ -1,13 +1,14 @@
-package com.epam.esm.repository.model;
+package com.epam.esm.service.model;
 
 import lombok.*;
 
 @Getter
 @Setter
 @Builder
+@ToString
 @AllArgsConstructor
 @NoArgsConstructor
-public class Tag {
+public class TagDTO {
 
     private Long id;
     private String name;

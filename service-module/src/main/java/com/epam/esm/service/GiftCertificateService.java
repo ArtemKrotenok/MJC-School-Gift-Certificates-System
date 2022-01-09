@@ -2,10 +2,19 @@ package com.epam.esm.service;
 
 import com.epam.esm.service.model.GiftCertificateDTO;
 
-import java.util.List;
-
 public interface GiftCertificateService {
 
-    List<GiftCertificateDTO> getCertificateByTag(String tag);
+    String getCertificateByTag(String tag);
 
+    String getAllGiftCertificateByPageSorted(Integer page);
+
+    String add(GiftCertificateDTO giftCertificateDTO);
+
+    String deleteById(Long id);
+
+    String findById(Long id);
+
+    String update(GiftCertificateDTO giftCertificateDTO);
+
+    String searchGiftCertificate(String tag, String name, String description);
 }
