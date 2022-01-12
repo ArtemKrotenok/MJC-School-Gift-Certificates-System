@@ -17,6 +17,9 @@ public class GiftCertificateUtil {
     public static final String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
 
     public static GiftCertificateDTO convert(GiftCertificate giftCertificate) {
+        if (giftCertificate == null) {
+            return null;
+        }
         GiftCertificateDTO giftCertificateDTO = GiftCertificateDTO.builder()
                 .id(giftCertificate.getId())
                 .name(giftCertificate.getName())
@@ -33,6 +36,9 @@ public class GiftCertificateUtil {
     }
 
     public static GiftCertificate convert(GiftCertificateDTO giftCertificateDTO) {
+        if (giftCertificateDTO == null) {
+            return null;
+        }
         GiftCertificate giftCertificate = GiftCertificate.builder()
                 .name(giftCertificateDTO.getName())
                 .description(giftCertificateDTO.getDescription())

@@ -1,16 +1,20 @@
 package com.epam.esm.service;
 
+import com.epam.esm.service.exception.GiftCertificateServiceException;
+import com.epam.esm.service.model.SuccessResponseDTO;
 import com.epam.esm.service.model.TagDTO;
+
+import java.util.List;
 
 public interface TagService {
 
-    String add(TagDTO tagDTO);
+    SuccessResponseDTO creat(TagDTO tagDTO) throws GiftCertificateServiceException;
 
-    String getAllTagsByPageSorted(Integer page);
+    List<TagDTO> getAllTagsByPageSorted(Integer page) throws GiftCertificateServiceException;
 
-    String getAllTagsSorted();
+    List<TagDTO> getAllTagsSorted() throws GiftCertificateServiceException;
 
-    String findById(Long id);
+    TagDTO findById(Long id) throws GiftCertificateServiceException;
 
-    String deleteById(Long id);
+    SuccessResponseDTO deleteById(Long id) throws GiftCertificateServiceException;
 }

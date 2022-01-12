@@ -96,7 +96,7 @@ public class GiftCertificateRepositoryImpl extends GenericRepositoryImpl<GiftCer
                         "gc.id, gc.name, gc.description, gc.price, gc.duration, gc.create_date, gc.last_update_date " +
                         "FROM gift_certificate AS gc " +
                         "JOIN gift_certificate_tag AS gct ON gc.id = gct.id_gift_certificate " +
-                        "JOIN tag t ON gct.id_tag = t.id WHERE t.name = ?",
+                        "JOIN tag t ON gct.id_tag = t.id WHERE t.name = ? ORDER BY name ASC",
                 new BeanPropertyRowMapper<>(GiftCertificate.class),
                 tag);
         if (giftCertificateList.size() > 0) {
@@ -107,7 +107,7 @@ public class GiftCertificateRepositoryImpl extends GenericRepositoryImpl<GiftCer
 
     @Override
     public List<GiftCertificate> findByName(String name) {
-        List<GiftCertificate> giftCertificateList = jdbcTemplate.query("SELECT * FROM gift_certificate WHERE name LIKE CONCAT( '%',?,'%')",
+        List<GiftCertificate> giftCertificateList = jdbcTemplate.query("SELECT * FROM gift_certificate WHERE name LIKE CONCAT( '%',?,'%') ORDER BY name ASC",
                 new BeanPropertyRowMapper<>(GiftCertificate.class),
                 name);
         if (giftCertificateList.size() > 0) {
@@ -118,7 +118,7 @@ public class GiftCertificateRepositoryImpl extends GenericRepositoryImpl<GiftCer
 
     @Override
     public List<GiftCertificate> findByDescription(String description) {
-        List<GiftCertificate> giftCertificateList = jdbcTemplate.query("SELECT * FROM gift_certificate WHERE description LIKE CONCAT( '%',?,'%')",
+        List<GiftCertificate> giftCertificateList = jdbcTemplate.query("SELECT * FROM gift_certificate WHERE description LIKE CONCAT( '%',?,'%') ORDER BY name ASC",
                 new BeanPropertyRowMapper<>(GiftCertificate.class),
                 description);
         if (giftCertificateList.size() > 0) {

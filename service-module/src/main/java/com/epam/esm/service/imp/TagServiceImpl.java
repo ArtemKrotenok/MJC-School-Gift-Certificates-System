@@ -3,15 +3,16 @@ package com.epam.esm.service.imp;
 import com.epam.esm.repository.TagRepository;
 import com.epam.esm.repository.model.Tag;
 import com.epam.esm.service.TagService;
+import com.epam.esm.service.exception.GiftCertificateServiceException;
 import com.epam.esm.service.model.ResponseCode;
+import com.epam.esm.service.model.SuccessResponseDTO;
 import com.epam.esm.service.model.TagDTO;
 import com.epam.esm.service.util.PaginationUtil;
 import com.epam.esm.service.util.ResponseDTOUtil;
 import com.epam.esm.service.util.TagUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,82 +26,63 @@ public class TagServiceImpl implements TagService {
     public static final int FIST_PAGE = 1;
     public static final int RESULT_ONE_RECORD = 1;
     private TagRepository tagRepository;
-    private final ObjectMapper objectMapper;
 
     @Override
-    public String add(TagDTO tagDTO) {
+    public SuccessResponseDTO creat(TagDTO tagDTO) throws GiftCertificateServiceException {
         String errorValidMessage = getErrorValid(tagDTO);
-        try {
-            if (errorValidMessage != null) {
-                return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                        ResponseCode.NOT_VALID_INPUT_DATA, errorValidMessage));
-            }
-            if (tagRepository.getTagByName(tagDTO.getName()) != null) {
-                return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                        ResponseCode.NOT_CREATE, "tag by name: " + tagDTO.getName() + " already exists"));
-            }
-            if (tagRepository.add(TagUtil.convert(tagDTO)) != null) {
-                return objectMapper.writeValueAsString(ResponseDTOUtil.getSuccessResponseDTO(
-                        ResponseCode.CREATE));
-            }
-            return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                    ResponseCode.NOT_CREATE));
-        } catch (JsonProcessingException e) {
-            log.error("exception: " + e);
+        if (errorValidMessage != null) {
+            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                    ResponseCode.NOT_VALID_INPUT_DATA, errorValidMessage));
         }
-        return null;
+        if (tagRepository.getTagByName(tagDTO.getName()) != null) {
+            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                    ResponseCode.NOT_CREATE, "tag by name: " + tagDTO.getName() + " already exists"));
+        }
+        if (tagRepository.add(TagUtil.convert(tagDTO)) != null) {
+            return ResponseDTOUtil.getSuccessResponseDTO(
+                    ResponseCode.CREATE);
+        }
+        throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                ResponseCode.NOT_CREATE));
     }
 
     @Override
-    public String findById(Long id) {
+    public TagDTO findById(Long id) throws GiftCertificateServiceException {
         String errorValidMessage = getErrorValid(id);
-        try {
-            if (errorValidMessage != null) {
-                return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                        ResponseCode.NOT_VALID_INPUT_DATA, errorValidMessage));
-            }
-            Tag tag = tagRepository.findById(id);
-            if (tag != null) {
-                return objectMapper.writeValueAsString(TagUtil.convert(tag));
-            }
-            return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
+        if (errorValidMessage != null) {
+            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                    ResponseCode.NOT_VALID_INPUT_DATA, errorValidMessage));
+        }
+        Tag tag = tagRepository.findById(id);
+        if (tag != null) {
+            return TagUtil.convert(tag);
+        }
+        throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                ResponseCode.NOT_FOUND, "for id=" + id), HttpStatus.NOT_FOUND);
+    }
+
+    @Override
+    public SuccessResponseDTO deleteById(Long id) throws GiftCertificateServiceException {
+        String errorValidMessage = getErrorValid(id);
+        if (errorValidMessage != null) {
+            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                    ResponseCode.NOT_VALID_INPUT_DATA, errorValidMessage));
+        }
+        Tag tag = tagRepository.findById(id);
+        if (tag == null) {
+            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
                     ResponseCode.NOT_FOUND, "for id=" + id));
-        } catch (JsonProcessingException e) {
-            log.error("exception: " + e);
         }
-        return null;
+        if (tagRepository.delete(tag) == RESULT_ONE_RECORD) {
+            return ResponseDTOUtil.getSuccessResponseDTO(
+                    ResponseCode.DELETE);
+        }
+        throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                ResponseCode.NOT_DELETE));
     }
 
     @Override
-    public String deleteById(Long id) {
-        String errorValidMessage = getErrorValid(id);
-        try {
-            if (errorValidMessage != null) {
-                return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                        ResponseCode.NOT_VALID_INPUT_DATA, errorValidMessage));
-            }
-            Tag tag = tagRepository.findById(id);
-            if (tag == null) {
-                return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                        ResponseCode.NOT_FOUND, "for id=" + id));
-            }
-            if (tagRepository.delete(tag) == RESULT_ONE_RECORD) {
-                return objectMapper.writeValueAsString(ResponseDTOUtil.getSuccessResponseDTO(
-                        ResponseCode.DELETE));
-            }
-            return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                    ResponseCode.NOT_DELETE));
-        } catch (JsonProcessingException e) {
-            log.error("exception: " + e);
-        }
-        return null;
-    }
-
-    @Override
-    public String getAllTagsByPageSorted(Integer page) {
-        if (page == null) {
-            return getAllTagsSorted();
-        }
+    public List<TagDTO> getAllTagsByPageSorted(Integer page) throws GiftCertificateServiceException {
         if (page < 0) {
             page = FIST_PAGE;
         }
@@ -110,22 +92,17 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public String getAllTagsSorted() {
+    public List<TagDTO> getAllTagsSorted() throws GiftCertificateServiceException {
         List<Tag> tagList = tagRepository.getAllTagSorted();
         return checkAndReturnResult(tagList);
     }
 
-    private String checkAndReturnResult(List<Tag> tagList) {
-        try {
-            if (!tagList.isEmpty()) {
-                return objectMapper.writeValueAsString(tagList.stream().map(TagUtil::convert).collect(Collectors.toList()));
-            }
-            return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                    ResponseCode.NOT_FOUND));
-        } catch (JsonProcessingException e) {
-            log.error("exception: " + e);
+    private List<TagDTO> checkAndReturnResult(List<Tag> tagList) throws GiftCertificateServiceException {
+        if (!tagList.isEmpty()) {
+            return tagList.stream().map(TagUtil::convert).collect(Collectors.toList());
         }
-        return null;
+        throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                ResponseCode.NOT_FOUND));
     }
 
     private String getErrorValid(Long id) {

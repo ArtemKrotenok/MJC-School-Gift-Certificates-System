@@ -6,6 +6,9 @@ import com.epam.esm.service.model.TagDTO;
 public class TagUtil {
 
     public static TagDTO convert(Tag tag) {
+        if (tag == null) {
+            return null;
+        }
         return TagDTO.builder()
                 .id(tag.getId())
                 .name(tag.getName())
@@ -13,6 +16,9 @@ public class TagUtil {
     }
 
     public static Tag convert(TagDTO tagDTO) {
+        if (tagDTO == null) {
+            return null;
+        }
         return Tag.builder()
                 .id(tagDTO.getId())
                 .name(tagDTO.getName())

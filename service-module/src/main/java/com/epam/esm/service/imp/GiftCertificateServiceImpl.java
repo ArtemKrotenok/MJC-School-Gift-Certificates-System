@@ -3,20 +3,22 @@ package com.epam.esm.service.imp;
 import com.epam.esm.repository.GiftCertificateRepository;
 import com.epam.esm.repository.model.GiftCertificate;
 import com.epam.esm.service.GiftCertificateService;
+import com.epam.esm.service.exception.GiftCertificateServiceException;
 import com.epam.esm.service.model.GiftCertificateDTO;
 import com.epam.esm.service.model.ResponseCode;
+import com.epam.esm.service.model.SuccessResponseDTO;
 import com.epam.esm.service.util.GiftCertificateUtil;
 import com.epam.esm.service.util.PaginationUtil;
 import com.epam.esm.service.util.ResponseDTOUtil;
 import com.epam.esm.service.util.TagUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,167 +30,108 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private static final int FIST_PAGE = 1;
     public static final int RESULT_ONE_RECORD = 1;
     private GiftCertificateRepository giftCertificateRepository;
-    private ObjectMapper objectMapper;
 
     @Override
-    public String add(GiftCertificateDTO giftCertificateDTO) {
-
-        String errorValidMessage = getErrorValid(giftCertificateDTO);
-        try {
-            if (errorValidMessage != null) {
-                return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                        ResponseCode.NOT_VALID_INPUT_DATA, errorValidMessage));
-            }
-
-            if (giftCertificateRepository.add(GiftCertificateUtil.convert(giftCertificateDTO)) != null) {
-                return objectMapper.writeValueAsString(ResponseDTOUtil.getSuccessResponseDTO(
-                        ResponseCode.CREATE));
-            }
-            return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                    ResponseCode.NOT_CREATE));
-        } catch (JsonProcessingException e) {
-            log.error("exception: " + e);
+    public SuccessResponseDTO create(GiftCertificateDTO giftCertificateDTO) throws GiftCertificateServiceException {
+        String errorValidMessage = getErrorValidMessage(giftCertificateDTO);
+        if (errorValidMessage != null) {
+            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                    ResponseCode.NOT_VALID_INPUT_DATA, errorValidMessage));
         }
-        return null;
+        if (giftCertificateRepository.add(GiftCertificateUtil.convert(giftCertificateDTO)) != null) {
+            return ResponseDTOUtil.getSuccessResponseDTO(
+                    ResponseCode.CREATE);
+        }
+        throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                ResponseCode.NOT_CREATE));
     }
 
     @Override
-    public String deleteById(Long id) {
-        String errorValidMessage = getErrorValid(id);
-        try {
-            if (errorValidMessage != null) {
-                return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                        ResponseCode.NOT_VALID_INPUT_DATA, errorValidMessage));
-            }
-            GiftCertificate giftCertificate = giftCertificateRepository.findById(id);
-            if (giftCertificate == null) {
-                return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                        ResponseCode.NOT_FOUND, "for id=" + id));
-            }
-            if (giftCertificateRepository.delete(giftCertificate) == RESULT_ONE_RECORD) {
-                return objectMapper.writeValueAsString(ResponseDTOUtil.getSuccessResponseDTO(
-                        ResponseCode.DELETE));
-            }
-            return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                    ResponseCode.NOT_DELETE));
-        } catch (JsonProcessingException e) {
-            log.error("exception: " + e);
-        }
-        return null;
-    }
-
-    @Override
-    public String findById(Long id) {
-        String errorValidMessage = getErrorValid(id);
-        try {
-            if (errorValidMessage != null) {
-                return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                        ResponseCode.NOT_VALID_INPUT_DATA, errorValidMessage));
-            }
-            GiftCertificate giftCertificate = giftCertificateRepository.findById(id);
-            if (giftCertificate != null) {
-                return objectMapper.writeValueAsString(GiftCertificateUtil.convert(giftCertificate));
-            }
-            return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                    ResponseCode.NOT_FOUND, "for id=" + id));
-        } catch (JsonProcessingException e) {
-            log.error("exception: " + e);
-        }
-        return null;
-    }
-
-    @Override
-    public String update(GiftCertificateDTO giftCertificateDTO) {
-        Long updateIdGiftCertificate = giftCertificateDTO.getId();
-        String errorValidMessage = getErrorValid(updateIdGiftCertificate);
-        try {
-            if (errorValidMessage != null) {
-                return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                        ResponseCode.NOT_VALID_INPUT_DATA, errorValidMessage));
-            }
-            GiftCertificate giftCertificate = giftCertificateRepository.findById(updateIdGiftCertificate);
-            if (giftCertificate == null) {
-                return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                        ResponseCode.NOT_FOUND, "for id=" + updateIdGiftCertificate));
-            }
-            giftCertificate = compareForUpdate(giftCertificate, giftCertificateDTO);
-            if (giftCertificateRepository.update(giftCertificate) == RESULT_ONE_RECORD) {
-                return objectMapper.writeValueAsString(ResponseDTOUtil.getSuccessResponseDTO(
-                        ResponseCode.UPDATE));
-            }
-            return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                    ResponseCode.NOT_UPDATE));
-        } catch (JsonProcessingException e) {
-            log.error("exception: " + e);
-        }
-        return null;
-    }
-
-    @Override
-    public String searchGiftCertificate(String tag, String name, String description) {
-        try {
-            if (tag == null && name == null && description == null) {
-                return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                        ResponseCode.NOT_VALID_INPUT_DATA, "all search criteria are empty"));
-            }
-            List<GiftCertificate> giftCertificateResultList = new ArrayList<>();
-            if (tag != null) {
-                giftCertificateResultList.addAll(getNewElements(giftCertificateResultList,
-                        giftCertificateRepository.findByTag(tag)));
-            }
-            if (name != null) {
-                giftCertificateResultList.addAll(getNewElements(giftCertificateResultList,
-                        giftCertificateRepository.findByName(name)));
-            }
-            if (description != null) {
-                giftCertificateResultList.addAll(getNewElements(giftCertificateResultList,
-                        giftCertificateRepository.findByDescription(description)));
-            }
-            if (giftCertificateResultList.isEmpty()) {
-                return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                        ResponseCode.NOT_FOUND, "for all search criteria"));
-            }
-            return objectMapper.writeValueAsString(giftCertificateResultList
-                    .stream()
-                    .map(GiftCertificateUtil::convert)
-                    .collect(Collectors.toList()));
-        } catch (JsonProcessingException e) {
-            log.error("exception: " + e);
-        }
-        return null;
-    }
-
-    @Override
-    public String getCertificateByTag(String tag) {
-        String errorValidMessage = getErrorValid(tag);
-        try {
-            if (errorValidMessage != null) {
-                return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                        ResponseCode.NOT_VALID_INPUT_DATA, errorValidMessage));
-            }
-            List<GiftCertificate> giftCertificateList = giftCertificateRepository.findByTag(tag);
-            if (giftCertificateList.isEmpty()) {
-                return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                        ResponseCode.NOT_FOUND, "for tag=" + tag));
-            }
-            return objectMapper.writeValueAsString(giftCertificateList
-                    .stream()
-                    .map(GiftCertificateUtil::convert)
-                    .collect(Collectors.toList()));
-        } catch (JsonProcessingException e) {
-            log.error("exception: " + e);
-        }
-        return null;
-    }
-
-    @Override
-    public String getAllGiftCertificateByPageSorted(Integer page) {
+    public List<GiftCertificateDTO> getAllGiftCertificateByPageSorted(Integer page) throws GiftCertificateServiceException {
         if (page == null || page < 0) {
             page = FIST_PAGE;
         }
         int startPosition = PaginationUtil.getPositionByPage(page);
         List<GiftCertificate> giftCertificateList = giftCertificateRepository.getAllGiftCertificateByPageSorted(startPosition, PaginationUtil.ITEMS_BY_PAGE);
-        return checkAndReturnResult(giftCertificateList);
+        return checkAndReturnResult(giftCertificateList, false);
+    }
+
+    @Override
+    public SuccessResponseDTO deleteById(Long id) throws GiftCertificateServiceException {
+        String errorValidMessage = getErrorValidMessage(id);
+        if (errorValidMessage != null) {
+            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                    ResponseCode.NOT_VALID_INPUT_DATA, errorValidMessage));
+        }
+        GiftCertificate giftCertificate = giftCertificateRepository.findById(id);
+        if (giftCertificate == null) {
+            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                    ResponseCode.NOT_FOUND, "for id=" + id));
+        }
+        if (giftCertificateRepository.delete(giftCertificate) == RESULT_ONE_RECORD) {
+            return ResponseDTOUtil.getSuccessResponseDTO(
+                    ResponseCode.DELETE);
+        }
+        throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                ResponseCode.NOT_DELETE));
+    }
+
+    @Override
+    public SuccessResponseDTO update(GiftCertificateDTO giftCertificateDTO) throws GiftCertificateServiceException {
+        Long updateIdGiftCertificate = giftCertificateDTO.getId();
+        String errorValidMessage = getErrorValidMessage(updateIdGiftCertificate);
+        if (errorValidMessage != null) {
+            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                    ResponseCode.NOT_VALID_INPUT_DATA, errorValidMessage));
+        }
+        GiftCertificate giftCertificate = giftCertificateRepository.findById(updateIdGiftCertificate);
+        if (giftCertificate == null) {
+            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                    ResponseCode.NOT_FOUND, "for id=" + updateIdGiftCertificate));
+        }
+        giftCertificate = compareForUpdate(giftCertificate, giftCertificateDTO);
+        if (giftCertificateRepository.update(giftCertificate) == RESULT_ONE_RECORD) {
+            return ResponseDTOUtil.getSuccessResponseDTO(ResponseCode.UPDATE);
+        }
+        throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                ResponseCode.NOT_UPDATE));
+    }
+
+    @Override
+    public GiftCertificateDTO findById(Long id) throws GiftCertificateServiceException {
+        String errorValidMessage = getErrorValidMessage(id);
+        if (errorValidMessage != null) {
+            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                    ResponseCode.NOT_VALID_INPUT_DATA, errorValidMessage));
+        }
+        GiftCertificate giftCertificate = giftCertificateRepository.findById(id);
+        if (giftCertificate != null) {
+            return GiftCertificateUtil.convert(giftCertificate);
+        }
+        throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                ResponseCode.NOT_FOUND, "for id=" + id));
+    }
+
+    @Override
+    public List<GiftCertificateDTO> searchGiftCertificate(String tag, String name, String description) throws GiftCertificateServiceException {
+        if (tag == null && name == null && description == null) {
+            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                    ResponseCode.NOT_VALID_INPUT_DATA, "all search criteria are empty"));
+        }
+        List<GiftCertificate> giftCertificateResultList = new ArrayList<>();
+        if (tag != null) {
+            giftCertificateResultList.addAll(getNewElements(giftCertificateResultList,
+                    giftCertificateRepository.findByTag(tag)));
+        }
+        if (name != null) {
+            giftCertificateResultList.addAll(getNewElements(giftCertificateResultList,
+                    giftCertificateRepository.findByName(name)));
+        }
+        if (description != null) {
+            giftCertificateResultList.addAll(getNewElements(giftCertificateResultList,
+                    giftCertificateRepository.findByDescription(description)));
+        }
+        return checkAndReturnResult(giftCertificateResultList, true);
     }
 
     private List<GiftCertificate> getNewElements(List<GiftCertificate> giftCertificateResultList, List<GiftCertificate> giftCertificateNewList) {
@@ -232,14 +175,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return giftCertificate;
     }
 
-    private String getErrorValid(String data) {
-        if (data == null || data.equals("")) {
-            return ("tag can't be empty");
-        }
-        return null;
-    }
-
-    private String getErrorValid(Long id) {
+    private String getErrorValidMessage(Long id) {
         if (id == null) {
             return ("id can't be empty");
         }
@@ -249,7 +185,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return null;
     }
 
-    private String getErrorValid(GiftCertificateDTO giftCertificateDTO) {
+    private String getErrorValidMessage(GiftCertificateDTO giftCertificateDTO) {
         if (giftCertificateDTO.getName() == null || giftCertificateDTO.getName().equals("")) {
             return ("certificate name can't be empty");
         }
@@ -265,16 +201,19 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return null;
     }
 
-    private String checkAndReturnResult(List<GiftCertificate> giftCertificateList) {
-        try {
-            if (!giftCertificateList.isEmpty()) {
-                return objectMapper.writeValueAsString(giftCertificateList.stream().map(GiftCertificateUtil::convert).collect(Collectors.toList()));
+    private List<GiftCertificateDTO> checkAndReturnResult(List<GiftCertificate> giftCertificateList, boolean needSort) throws GiftCertificateServiceException {
+        if (!giftCertificateList.isEmpty()) {
+            if (needSort) {
+                return sortResult(giftCertificateList.stream().map(GiftCertificateUtil::convert).collect(Collectors.toList()));
             }
-            return objectMapper.writeValueAsString(ResponseDTOUtil.getErrorResponseDTO(
-                    ResponseCode.NOT_FOUND));
-        } catch (JsonProcessingException e) {
-            log.error("exception: " + e);
+            return giftCertificateList.stream().map(GiftCertificateUtil::convert).collect(Collectors.toList());
         }
-        return null;
+        throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                ResponseCode.NOT_FOUND), HttpStatus.NOT_FOUND);
+    }
+
+    private List<GiftCertificateDTO> sortResult(List<GiftCertificateDTO> giftCertificateDTOList) {
+        giftCertificateDTOList.sort(Comparator.comparing(GiftCertificateDTO::getName));
+        return giftCertificateDTOList;
     }
 }
