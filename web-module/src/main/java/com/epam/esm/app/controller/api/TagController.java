@@ -36,7 +36,7 @@ public class TagController {
         try {
             return ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body(tagService.creat(tagDTO));
+                    .body(tagService.create(tagDTO));
         } catch (GiftCertificateServiceException exception) {
             return ResponseEntity
                     .status(exception.getResponseHttpStatus())

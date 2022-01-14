@@ -10,6 +10,6 @@
     * _Log4j2_
 * Unit and Integration application tests
 
-## Authors
+## Author
 
 * [Artem Krotenok](https://www.linkedin.com/in/artem-krotenok/)

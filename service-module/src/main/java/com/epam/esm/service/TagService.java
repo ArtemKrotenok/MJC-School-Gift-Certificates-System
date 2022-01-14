@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface TagService {
 
-    SuccessResponseDTO creat(TagDTO tagDTO) throws GiftCertificateServiceException;
+    SuccessResponseDTO create(TagDTO tagDTO) throws GiftCertificateServiceException;
 
     List<TagDTO> getAllTagsByPageSorted(Integer page) throws GiftCertificateServiceException;
 

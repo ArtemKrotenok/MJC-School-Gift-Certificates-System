@@ -28,7 +28,7 @@ public class TagServiceImpl implements TagService {
     private TagRepository tagRepository;
 
     @Override
-    public SuccessResponseDTO creat(TagDTO tagDTO) throws GiftCertificateServiceException {
+    public SuccessResponseDTO create(TagDTO tagDTO) throws GiftCertificateServiceException {
         String errorValidMessage = getErrorValid(tagDTO);
         if (errorValidMessage != null) {
             throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
