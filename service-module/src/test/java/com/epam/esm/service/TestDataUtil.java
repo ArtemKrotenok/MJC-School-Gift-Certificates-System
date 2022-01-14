@@ -7,8 +7,9 @@ import com.epam.esm.service.model.TagDTO;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TestDataUtil {
 
@@ -71,34 +72,18 @@ public class TestDataUtil {
     }
 
     public static List<Tag> getValidTagList(int count) {
-        List<Tag> resultList = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            resultList.add(getValidTag());
-        }
-        return resultList;
+        return Stream.generate(TestDataUtil::getValidTag).limit(count).collect(Collectors.toList());
     }
 
     public static List<TagDTO> getValidTagDTOList(int count) {
-        List<TagDTO> resultList = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            resultList.add(getValidTagDTO());
-        }
-        return resultList;
+        return Stream.generate(TestDataUtil::getValidTagDTO).limit(count).collect(Collectors.toList());
     }
 
     public static List<GiftCertificate> getValidGiftCertificateList(int count) {
-        List<GiftCertificate> resultList = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            resultList.add(getValidGiftCertificate());
-        }
-        return resultList;
+        return Stream.generate(TestDataUtil::getValidGiftCertificate).limit(count).collect(Collectors.toList());
     }
 
     public static List<GiftCertificateDTO> getValidGiftCertificateDTOList(int count) {
-        List<GiftCertificateDTO> resultList = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            resultList.add(getValidGiftCertificateDTO());
-        }
-        return resultList;
+        return Stream.generate(TestDataUtil::getValidGiftCertificateDTO).limit(count).collect(Collectors.toList());
     }
 }
