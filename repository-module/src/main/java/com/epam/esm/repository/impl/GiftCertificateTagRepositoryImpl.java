@@ -54,8 +54,8 @@ public class GiftCertificateTagRepositoryImpl extends GenericRepositoryImpl<Gift
     }
 
     @Override
-    public void addByTagList(Long idGiftCertificate, List<Tag> tagList) {
-        List<Tag> saveTagList = tagRepository.updateTagList(tagList);
+    public void add(Long idGiftCertificate, List<Tag> tagList) {
+        List<Tag> saveTagList = tagRepository.updateTags(tagList);
         saveTagList.forEach(element ->
                 add(GiftCertificateTag.builder()
                         .idGiftCertificate(idGiftCertificate)
@@ -82,5 +82,10 @@ public class GiftCertificateTagRepositoryImpl extends GenericRepositoryImpl<Gift
             resultTagList.add(tagRepository.findById(idTag));
         }
         return resultTagList;
+    }
+
+    @Override
+    public long count() {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM gift_certificate_tag", Long.class);
     }
 }

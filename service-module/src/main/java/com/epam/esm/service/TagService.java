@@ -10,9 +10,9 @@ public interface TagService {
 
     SuccessResponseDTO create(TagDTO tagDTO) throws GiftCertificateServiceException;
 
-    List<TagDTO> getAllTagsByPageSorted(Integer page) throws GiftCertificateServiceException;
+    List<TagDTO> getAllByPageSorted(Integer page) throws GiftCertificateServiceException;
 
-    List<TagDTO> getAllTagsSorted() throws GiftCertificateServiceException;
+    List<TagDTO> getAllSorted() throws GiftCertificateServiceException;
 
     TagDTO findById(Long id) throws GiftCertificateServiceException;
 

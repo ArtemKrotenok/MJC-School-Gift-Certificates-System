@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface GiftCertificateRepository extends GenericRepository<GiftCertificate> {
 
-    List<GiftCertificate> getAllGiftCertificateByPageSorted(int startPosition, int itemsByPage);
+    List<GiftCertificate> getAllByPageSorted(int startPosition, int itemsByPage);
 
     List<GiftCertificate> findByTag(String tag);
 

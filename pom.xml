@@ -27,6 +27,7 @@
         <mockito-core.version>4.2.0</mockito-core.version>
         <mockito-junit-jupiter.version>4.2.0</mockito-junit-jupiter.version>
         <assertj-core.version>3.22.0</assertj-core.version>
+        <h2.version>2.0.206</h2.version>
     </properties>
 
     <dependencies>
@@ -105,6 +106,13 @@
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
             <version>${assertj-core.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2.version}</version>
             <scope>test</scope>
         </dependency>
 

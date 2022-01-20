@@ -13,30 +13,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GiftCertificateUtilTest {
 
     @Test
-    void convert_DTO_to_entity() {
-        GiftCertificateDTO validGiftCertificateDTO = TestDataUtil.getValidGiftCertificateDTO();
-        GiftCertificate validGiftCertificate = TestDataUtil.getValidGiftCertificate();
+    void convert_DTO_entity() {
+        GiftCertificateDTO validGiftCertificateDTO = TestServiceDataUtil.getValidGiftCertificateDTO();
+        GiftCertificate validGiftCertificate = TestServiceDataUtil.getValidGiftCertificate();
         GiftCertificate covertGiftCertificate = GiftCertificateUtil.convert(validGiftCertificateDTO);
         assertThat(covertGiftCertificate).isEqualTo(validGiftCertificate);
     }
 
     @Test
-    void convert_DTO_NULL_to_entity() {
+    void convert_invalidDTO_null() {
         GiftCertificateDTO nullGiftCertificateDTO = null;
         GiftCertificate covertGiftCertificateDTO = GiftCertificateUtil.convert(nullGiftCertificateDTO);
         assertThat(covertGiftCertificateDTO).isNull();
     }
 
     @Test
-    void convert_entity_to_DTO() {
-        GiftCertificate validGiftCertificate = TestDataUtil.getValidGiftCertificate();
-        GiftCertificateDTO validGiftCertificateDTO = TestDataUtil.getValidGiftCertificateDTO();
+    void convert_entity_DTO() {
+        GiftCertificate validGiftCertificate = TestServiceDataUtil.getValidGiftCertificate();
+        GiftCertificateDTO validGiftCertificateDTO = TestServiceDataUtil.getValidGiftCertificateDTO();
         GiftCertificateDTO covertGiftCertificateDTO = GiftCertificateUtil.convert(validGiftCertificate);
         assertThat(covertGiftCertificateDTO).isEqualTo(validGiftCertificateDTO);
     }
 
     @Test
-    void convert_entity_NULL_to_DTO() {
+    void convert_invalidEntity_null() {
         GiftCertificate nullGiftCertificate = null;
         GiftCertificateDTO covertGiftCertificateDTO = GiftCertificateUtil.convert(nullGiftCertificate);
         assertThat(covertGiftCertificateDTO).isNull();

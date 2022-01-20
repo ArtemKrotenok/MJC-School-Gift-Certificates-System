@@ -6,11 +6,11 @@ import java.util.List;
 
 public interface TagRepository extends GenericRepository<Tag> {
 
-    Tag getTagByName(String name);
+    Tag findByName(String name);
 
-    List<Tag> getAllTagByPageSorted(int startPosition, int itemsByPage);
+    List<Tag> getAllByPageSorted(int startPosition, int itemsByPage);
 
-    List<Tag> getAllTagSorted();
+    List<Tag> getAllSorted();
 
-    List<Tag> updateTagList(List<Tag> tagList);
+    List<Tag> updateTags(List<Tag> tagList);
 }

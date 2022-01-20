@@ -47,12 +47,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificateDTO> getAllGiftCertificateByPageSorted(Integer page) throws GiftCertificateServiceException {
+    public List<GiftCertificateDTO> getAllByPageSorted(Integer page) throws GiftCertificateServiceException {
         if (page == null || page < 0) {
             page = FIST_PAGE;
         }
         int startPosition = PaginationUtil.getPositionByPage(page);
-        List<GiftCertificate> giftCertificateList = giftCertificateRepository.getAllGiftCertificateByPageSorted(startPosition, PaginationUtil.ITEMS_BY_PAGE);
+        List<GiftCertificate> giftCertificateList = giftCertificateRepository.getAllByPageSorted(startPosition, PaginationUtil.ITEMS_BY_PAGE);
         return checkAndReturnResult(giftCertificateList, false);
     }
 
@@ -113,7 +113,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificateDTO> searchGiftCertificate(String tag, String name, String description) throws GiftCertificateServiceException {
+    public List<GiftCertificateDTO> search(String tag, String name, String description) throws GiftCertificateServiceException {
         if (tag == null && name == null && description == null) {
             throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
                     ResponseCode.NOT_VALID_INPUT_DATA, "all search criteria are empty"));

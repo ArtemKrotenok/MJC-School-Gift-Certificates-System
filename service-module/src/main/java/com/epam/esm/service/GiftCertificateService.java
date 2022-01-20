@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface GiftCertificateService {
 
-    List<GiftCertificateDTO> getAllGiftCertificateByPageSorted(Integer page) throws GiftCertificateServiceException;
+    List<GiftCertificateDTO> getAllByPageSorted(Integer page) throws GiftCertificateServiceException;
 
     SuccessResponseDTO create(GiftCertificateDTO giftCertificateDTO) throws GiftCertificateServiceException;
 
@@ -18,5 +18,5 @@ public interface GiftCertificateService {
 
     SuccessResponseDTO update(GiftCertificateDTO giftCertificateDTO) throws GiftCertificateServiceException;
 
-    List<GiftCertificateDTO> searchGiftCertificate(String tag, String name, String description) throws GiftCertificateServiceException;
+    List<GiftCertificateDTO> search(String tag, String name, String description) throws GiftCertificateServiceException;
 }

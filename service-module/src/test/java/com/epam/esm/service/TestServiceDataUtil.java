@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class TestDataUtil {
+public class TestServiceDataUtil {
 
     public static final long TAG_TEST_ID = 5L;
     public static final long TAG_TEST_ID_NOT_EXIST = 1000L;
@@ -72,18 +72,18 @@ public class TestDataUtil {
     }
 
     public static List<Tag> getValidTagList(int count) {
-        return Stream.generate(TestDataUtil::getValidTag).limit(count).collect(Collectors.toList());
+        return Stream.generate(TestServiceDataUtil::getValidTag).limit(count).collect(Collectors.toList());
     }
 
     public static List<TagDTO> getValidTagDTOList(int count) {
-        return Stream.generate(TestDataUtil::getValidTagDTO).limit(count).collect(Collectors.toList());
+        return Stream.generate(TestServiceDataUtil::getValidTagDTO).limit(count).collect(Collectors.toList());
     }
 
     public static List<GiftCertificate> getValidGiftCertificateList(int count) {
-        return Stream.generate(TestDataUtil::getValidGiftCertificate).limit(count).collect(Collectors.toList());
+        return Stream.generate(TestServiceDataUtil::getValidGiftCertificate).limit(count).collect(Collectors.toList());
     }
 
     public static List<GiftCertificateDTO> getValidGiftCertificateDTOList(int count) {
-        return Stream.generate(TestDataUtil::getValidGiftCertificateDTO).limit(count).collect(Collectors.toList());
+        return Stream.generate(TestServiceDataUtil::getValidGiftCertificateDTO).limit(count).collect(Collectors.toList());
     }
 }

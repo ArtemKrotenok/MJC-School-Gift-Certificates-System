@@ -27,7 +27,7 @@ public class TagRepositoryImpl extends GenericRepositoryImpl<Tag> implements Tag
     }
 
     @Override
-    public Tag getTagByName(String name) {
+    public Tag findByName(String name) {
         return jdbcTemplate.query("SELECT * FROM tag WHERE name=?",
                         new BeanPropertyRowMapper<>(Tag.class),
                         name)
@@ -35,24 +35,24 @@ public class TagRepositoryImpl extends GenericRepositoryImpl<Tag> implements Tag
     }
 
     @Override
-    public List<Tag> getAllTagByPageSorted(int startPosition, int itemsByPage) {
-        return jdbcTemplate.query("SELECT * FROM tag ORDER BY name ASC OFFSET ? LIMIT ?",
+    public List<Tag> getAllByPageSorted(int startPosition, int itemsByPage) {
+        return jdbcTemplate.query("SELECT * FROM tag ORDER BY name ASC LIMIT ? OFFSET ?",
                 new BeanPropertyRowMapper<>(Tag.class),
-                startPosition,
-                itemsByPage);
+                itemsByPage,
+                startPosition);
     }
 
     @Override
-    public List<Tag> getAllTagSorted() {
+    public List<Tag> getAllSorted() {
         return jdbcTemplate.query("SELECT * FROM tag ORDER BY name ASC",
                 new BeanPropertyRowMapper<>(Tag.class));
     }
 
     @Override
-    public List<Tag> updateTagList(List<Tag> tagList) {
+    public List<Tag> updateTags(List<Tag> tagList) {
         List<Tag> resultList = new ArrayList<>();
         for (Tag tag : tagList) {
-            Tag tagBD = getTagByName(tag.getName());
+            Tag tagBD = findByName(tag.getName());
             if (tagBD == null) {
                 tagBD = Tag.builder()
                         .id(add(tag))
@@ -96,5 +96,10 @@ public class TagRepositoryImpl extends GenericRepositoryImpl<Tag> implements Tag
     @Override
     public int delete(Tag Tag) {
         return jdbcTemplate.update("DELETE FROM tag WHERE id=?", Tag.getId());
+    }
+
+    @Override
+    public long count() {
+        return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM tag", Long.class);
     }
 }

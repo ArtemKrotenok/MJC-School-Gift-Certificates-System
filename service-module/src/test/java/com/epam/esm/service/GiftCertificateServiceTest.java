@@ -17,7 +17,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static com.epam.esm.repository.impl.GiftCertificateRepositoryImpl.ONE_RESULT;
-import static com.epam.esm.service.TestDataUtil.*;
+import static com.epam.esm.service.TestServiceDataUtil.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -37,8 +37,8 @@ class GiftCertificateServiceTest {
     }
 
     @Test
-    void creat_valid_giftCertificate() throws GiftCertificateServiceException {
-        GiftCertificateDTO giftCertificateDTO = TestDataUtil.getValidGiftCertificateDTO();
+    void creat_validGiftCertificate_SuccessResponseDTO() throws GiftCertificateServiceException {
+        GiftCertificateDTO giftCertificateDTO = TestServiceDataUtil.getValidGiftCertificateDTO();
         when(giftCertificateRepository.add(any(GiftCertificate.class))).thenReturn(1L);
         SuccessResponseDTO successResponseDTO = giftCertificateService.create(giftCertificateDTO);
         assertThat(successResponseDTO).isNotNull();
@@ -46,8 +46,8 @@ class GiftCertificateServiceTest {
     }
 
     @Test
-    void creat_not_valid_giftCertificate() {
-        GiftCertificateDTO giftCertificateDTO = TestDataUtil.getValidGiftCertificateDTO();
+    void creat_invalidGiftCertificate_GiftCertificateServiceException() {
+        GiftCertificateDTO giftCertificateDTO = TestServiceDataUtil.getValidGiftCertificateDTO();
         giftCertificateDTO.setName(null);
         Exception exception = assertThrows(Exception.class, () -> {
             giftCertificateService.create(giftCertificateDTO);
@@ -59,14 +59,14 @@ class GiftCertificateServiceTest {
     }
 
     @Test
-    void find_giftCertificate_by_id() throws GiftCertificateServiceException {
-        when(giftCertificateRepository.findById(GIFT_CERTIFICATE_TEST_ID)).thenReturn(TestDataUtil.getValidGiftCertificate());
+    void findById_validId_GiftCertificateDTO() throws GiftCertificateServiceException {
+        when(giftCertificateRepository.findById(GIFT_CERTIFICATE_TEST_ID)).thenReturn(TestServiceDataUtil.getValidGiftCertificate());
         GiftCertificateDTO finedGiftCertificateDTO = giftCertificateService.findById(GIFT_CERTIFICATE_TEST_ID);
-        assertEquals(finedGiftCertificateDTO, TestDataUtil.getValidGiftCertificateDTO());
+        assertEquals(finedGiftCertificateDTO, TestServiceDataUtil.getValidGiftCertificateDTO());
     }
 
     @Test
-    void find_giftCertificate_by_not_valid_id() {
+    void findById_invalidId_GiftCertificateServiceException() {
         Exception exception = assertThrows(Exception.class, () -> {
             giftCertificateService.findById(GIFT_CERTIFICATE_TEST_ID_NOT_EXIST);
         });
@@ -77,8 +77,8 @@ class GiftCertificateServiceTest {
     }
 
     @Test
-    void delete_giftCertificate_by_id() throws GiftCertificateServiceException {
-        GiftCertificate validGiftCertificate = TestDataUtil.getValidGiftCertificate();
+    void deleteById_validId_SuccessResponseDTO() throws GiftCertificateServiceException {
+        GiftCertificate validGiftCertificate = TestServiceDataUtil.getValidGiftCertificate();
         when(giftCertificateRepository.findById(GIFT_CERTIFICATE_TEST_ID)).thenReturn(validGiftCertificate);
         when(giftCertificateRepository.delete(validGiftCertificate)).thenReturn(ONE_RESULT);
         SuccessResponseDTO successResponseDTO = giftCertificateService.deleteById(GIFT_CERTIFICATE_TEST_ID);
@@ -87,7 +87,7 @@ class GiftCertificateServiceTest {
     }
 
     @Test
-    void delete_giftCertificate_by_not_valid_id() {
+    void deleteById_invalidId_GiftCertificateServiceException() {
         when(giftCertificateRepository.findById(GIFT_CERTIFICATE_TEST_ID_NOT_EXIST)).thenReturn(null);
         Exception exception = assertThrows(Exception.class, () -> {
             giftCertificateService.deleteById(GIFT_CERTIFICATE_TEST_ID_NOT_EXIST);
@@ -99,9 +99,9 @@ class GiftCertificateServiceTest {
     }
 
     @Test
-    void update_gift_certificate() throws GiftCertificateServiceException {
-        GiftCertificate validGiftCertificate = TestDataUtil.getValidGiftCertificate();
-        GiftCertificateDTO validGiftCertificateDTO = TestDataUtil.getValidGiftCertificateDTO();
+    void update_validGiftCertificateDTO_SuccessResponseDTO() throws GiftCertificateServiceException {
+        GiftCertificate validGiftCertificate = TestServiceDataUtil.getValidGiftCertificate();
+        GiftCertificateDTO validGiftCertificateDTO = TestServiceDataUtil.getValidGiftCertificateDTO();
         when(giftCertificateRepository.findById(validGiftCertificate.getId())).thenReturn(validGiftCertificate);
         when(giftCertificateRepository.update(any(GiftCertificate.class))).thenReturn(ONE_RESULT);
         SuccessResponseDTO successResponseDTO = giftCertificateService.update(validGiftCertificateDTO);
@@ -110,10 +110,10 @@ class GiftCertificateServiceTest {
     }
 
     @Test
-    void get_all_gift_certificate_by_page_sorted() throws GiftCertificateServiceException {
-        when(giftCertificateRepository.getAllGiftCertificateByPageSorted(0, PaginationUtil.ITEMS_BY_PAGE)).
-                thenReturn(TestDataUtil.getValidGiftCertificateList(TestDataUtil.COUNT_TEST_GIFT_CERTIFICATE_LIST));
-        List<GiftCertificateDTO> finedGiftCertificateDTOList = giftCertificateService.getAllGiftCertificateByPageSorted(1);
-        assertEquals(finedGiftCertificateDTOList, TestDataUtil.getValidGiftCertificateDTOList(COUNT_TEST_GIFT_CERTIFICATE_LIST));
+    void getAllByPageSorted_returnSortedCertificateDTOs() throws GiftCertificateServiceException {
+        when(giftCertificateRepository.getAllByPageSorted(0, PaginationUtil.ITEMS_BY_PAGE)).
+                thenReturn(TestServiceDataUtil.getValidGiftCertificateList(TestServiceDataUtil.COUNT_TEST_GIFT_CERTIFICATE_LIST));
+        List<GiftCertificateDTO> finedGiftCertificateDTOList = giftCertificateService.getAllByPageSorted(1);
+        assertEquals(finedGiftCertificateDTOList, TestServiceDataUtil.getValidGiftCertificateDTOList(COUNT_TEST_GIFT_CERTIFICATE_LIST));
     }
 }

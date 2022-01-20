@@ -2,18 +2,16 @@ package com.epam.esm.app.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.sql.DataSource;
+
+import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType.H2;
 
 @Configuration
 @EnableWebMvc
@@ -22,9 +20,12 @@ import javax.sql.DataSource;
         "com.epam.esm.repository"})
 @PropertySource("classpath:application.properties")
 @AllArgsConstructor
-public class AppConfig implements WebMvcConfigurer {
+@Profile("test")
+public class AppConfigTest implements WebMvcConfigurer {
 
-    private final Environment env;
+    public static final String ENCODING = "UTF-8";
+    public static final String SCHEMA_DB_SQL = "schemaDB.sql";
+    public static final String TEST_DATA_DB_SQL = "testDataDB.sql";
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertiesResolver() {
@@ -33,12 +34,14 @@ public class AppConfig implements WebMvcConfigurer {
 
     @Bean
     public DataSource dataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(env.getRequiredProperty("datasource.driver_class"));
-        dataSource.setUrl(env.getRequiredProperty("datasource.connection.url"));
-        dataSource.setUsername(env.getRequiredProperty("datasource.connection.username"));
-        dataSource.setPassword(env.getRequiredProperty("datasource.connection.password"));
-        return dataSource;
+        return new EmbeddedDatabaseBuilder()
+                .generateUniqueName(true)
+                .setType(H2)
+                .setScriptEncoding(ENCODING)
+                .ignoreFailedDrops(true)
+                .addScript(SCHEMA_DB_SQL)
+                .addScript(TEST_DATA_DB_SQL)
+                .build();
     }
 
     @Bean

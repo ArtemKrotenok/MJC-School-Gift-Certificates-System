@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-import static com.epam.esm.service.TestDataUtil.*;
+import static com.epam.esm.service.TestServiceDataUtil.*;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -37,8 +37,8 @@ class TagServiceTest {
     }
 
     @Test
-    void creat_valid_tag() throws GiftCertificateServiceException {
-        TagDTO tagDTO = TestDataUtil.getValidTagDTO();
+    void creat_validTag_SuccessResponseDTO() throws GiftCertificateServiceException {
+        TagDTO tagDTO = TestServiceDataUtil.getValidTagDTO();
         when(tagRepository.add(any(Tag.class))).thenReturn(1L);
         SuccessResponseDTO successResponseDTO = tagService.create(tagDTO);
         assertThat(successResponseDTO).isNotNull();
@@ -46,8 +46,8 @@ class TagServiceTest {
     }
 
     @Test
-    void creat_not_valid_tag() {
-        TagDTO tagDTO = TestDataUtil.getValidTagDTO();
+    void create_invalidTag_GiftCertificateServiceException() {
+        TagDTO tagDTO = TestServiceDataUtil.getValidTagDTO();
         tagDTO.setName(null);
         Exception exception = assertThrows(Exception.class, () -> {
             tagService.create(tagDTO);
@@ -59,14 +59,14 @@ class TagServiceTest {
     }
 
     @Test
-    void find_tag_by_id() throws GiftCertificateServiceException {
-        when(tagRepository.findById(TAG_TEST_ID)).thenReturn(TestDataUtil.getValidTag());
+    void findById_validId_TagDTO() throws GiftCertificateServiceException {
+        when(tagRepository.findById(TAG_TEST_ID)).thenReturn(TestServiceDataUtil.getValidTag());
         TagDTO finedTagDTO = tagService.findById(TAG_TEST_ID);
-        assertEquals(finedTagDTO, TestDataUtil.getValidTagDTO());
+        assertEquals(finedTagDTO, TestServiceDataUtil.getValidTagDTO());
     }
 
     @Test
-    void find_tag_by_not_valid_id() {
+    void findById_invalidId_GiftCertificateServiceException() {
         Exception exception = assertThrows(Exception.class, () -> {
             tagService.findById(TAG_TEST_ID_NOT_EXIST);
         });
@@ -77,8 +77,8 @@ class TagServiceTest {
     }
 
     @Test
-    void delete_tag_by_id() throws GiftCertificateServiceException {
-        Tag validTag = TestDataUtil.getValidTag();
+    void deleteById_validId_SuccessResponseDTO() throws GiftCertificateServiceException {
+        Tag validTag = TestServiceDataUtil.getValidTag();
         when(tagRepository.findById(TAG_TEST_ID)).thenReturn(validTag);
         when(tagRepository.delete(validTag)).thenReturn(ONE_RESULT);
         SuccessResponseDTO successResponseDTO = tagService.deleteById(TAG_TEST_ID);
@@ -87,7 +87,7 @@ class TagServiceTest {
     }
 
     @Test
-    void delete_tag_by_not_valid_id() {
+    void deleteById_invalidId_GiftCertificateServiceException() {
         when(tagRepository.findById(TAG_TEST_ID_NOT_EXIST)).thenReturn(null);
         Exception exception = assertThrows(Exception.class, () -> {
             tagService.deleteById(TAG_TEST_ID_NOT_EXIST);
@@ -99,18 +99,18 @@ class TagServiceTest {
     }
 
     @Test
-    void get_all_tags_by_page_sorted() throws GiftCertificateServiceException {
-        when(tagRepository.getAllTagByPageSorted(0, PaginationUtil.ITEMS_BY_PAGE)).
-                thenReturn(TestDataUtil.getValidTagList(TestDataUtil.COUNT_TEST_TAG_LIST));
-        List<TagDTO> finedTagDTOList = tagService.getAllTagsByPageSorted(1);
-        assertEquals(finedTagDTOList, TestDataUtil.getValidTagDTOList(COUNT_TEST_TAG_LIST));
+    void getAllByPageSorted_returnSortedTagDTOs() throws GiftCertificateServiceException {
+        when(tagRepository.getAllByPageSorted(0, PaginationUtil.ITEMS_BY_PAGE)).
+                thenReturn(TestServiceDataUtil.getValidTagList(TestServiceDataUtil.COUNT_TEST_TAG_LIST));
+        List<TagDTO> finedTagDTOList = tagService.getAllByPageSorted(1);
+        assertEquals(finedTagDTOList, TestServiceDataUtil.getValidTagDTOList(COUNT_TEST_TAG_LIST));
     }
 
     @Test
-    void get_all_tags_sorted() throws GiftCertificateServiceException {
-        when(tagRepository.getAllTagSorted()).
-                thenReturn(TestDataUtil.getValidTagList(TestDataUtil.COUNT_TEST_TAG_LIST));
-        List<TagDTO> finedTagDTOList = tagService.getAllTagsSorted();
-        assertEquals(finedTagDTOList, TestDataUtil.getValidTagDTOList(COUNT_TEST_TAG_LIST));
+    void getAllSorted_returnSortedTagDTOs() throws GiftCertificateServiceException {
+        when(tagRepository.getAllSorted()).
+                thenReturn(TestServiceDataUtil.getValidTagList(TestServiceDataUtil.COUNT_TEST_TAG_LIST));
+        List<TagDTO> finedTagDTOList = tagService.getAllSorted();
+        assertEquals(finedTagDTOList, TestServiceDataUtil.getValidTagDTOList(COUNT_TEST_TAG_LIST));
     }
 }

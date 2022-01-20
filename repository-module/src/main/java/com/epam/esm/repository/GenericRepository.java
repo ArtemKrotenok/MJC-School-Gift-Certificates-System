@@ -14,4 +14,5 @@ public interface GenericRepository<T> {
 
     int delete(T object);
 
+    long count();
 }

@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface GiftCertificateTagRepository extends GenericRepository<GiftCertificateTag> {
 
-    void addByTagList(Long idGiftCertificate, List<Tag> tagList);
+    void add(Long idGiftCertificate, List<Tag> tagList);
 
     int deleteByGiftCertificateId(Long id);
 

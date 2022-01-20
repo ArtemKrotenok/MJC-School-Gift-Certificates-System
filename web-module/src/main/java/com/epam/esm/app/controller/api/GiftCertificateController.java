@@ -74,7 +74,7 @@ public class GiftCertificateController {
         try {
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(giftCertificateService.getAllGiftCertificateByPageSorted(page));
+                    .body(giftCertificateService.getAllByPageSorted(page));
         } catch (GiftCertificateServiceException exception) {
             return ResponseEntity
                     .status(exception.getResponseHttpStatus())
@@ -118,7 +118,7 @@ public class GiftCertificateController {
         try {
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(giftCertificateService.searchGiftCertificate(tag, name, description));
+                    .body(giftCertificateService.search(tag, name, description));
         } catch (GiftCertificateServiceException exception) {
             return ResponseEntity
                     .status(exception.getResponseHttpStatus())
@@ -143,11 +143,5 @@ public class GiftCertificateController {
                     .status(exception.getResponseHttpStatus())
                     .body(exception.getErrorResponseDTO());
         }
-    }
-
-    //TODO delete this method
-    @GetMapping("/start")
-    public String start() {
-        return "Server STARTED !";
     }
 }

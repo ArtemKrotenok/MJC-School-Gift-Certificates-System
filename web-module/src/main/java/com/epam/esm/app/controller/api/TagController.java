@@ -56,11 +56,11 @@ public class TagController {
             if (page == null) {
                 return ResponseEntity
                         .status(HttpStatus.OK)
-                        .body(tagService.getAllTagsSorted());
+                        .body(tagService.getAllSorted());
             }
             return ResponseEntity
                     .status(HttpStatus.OK)
-                    .body(tagService.getAllTagsByPageSorted(page));
+                    .body(tagService.getAllByPageSorted(page));
         } catch (GiftCertificateServiceException exception) {
             return ResponseEntity
                     .status(exception.getResponseHttpStatus())

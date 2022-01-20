@@ -34,7 +34,7 @@ public class TagServiceImpl implements TagService {
             throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
                     ResponseCode.NOT_VALID_INPUT_DATA, errorValidMessage));
         }
-        if (tagRepository.getTagByName(tagDTO.getName()) != null) {
+        if (tagRepository.findByName(tagDTO.getName()) != null) {
             throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
                     ResponseCode.NOT_CREATE, "tag by name: " + tagDTO.getName() + " already exists"));
         }
@@ -82,18 +82,18 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<TagDTO> getAllTagsByPageSorted(Integer page) throws GiftCertificateServiceException {
+    public List<TagDTO> getAllByPageSorted(Integer page) throws GiftCertificateServiceException {
         if (page < 0) {
             page = FIST_PAGE;
         }
         int startPosition = PaginationUtil.getPositionByPage(page);
-        List<Tag> tagList = tagRepository.getAllTagByPageSorted(startPosition, PaginationUtil.ITEMS_BY_PAGE);
+        List<Tag> tagList = tagRepository.getAllByPageSorted(startPosition, PaginationUtil.ITEMS_BY_PAGE);
         return checkAndReturnResult(tagList);
     }
 
     @Override
-    public List<TagDTO> getAllTagsSorted() throws GiftCertificateServiceException {
-        List<Tag> tagList = tagRepository.getAllTagSorted();
+    public List<TagDTO> getAllSorted() throws GiftCertificateServiceException {
+        List<Tag> tagList = tagRepository.getAllSorted();
         return checkAndReturnResult(tagList);
     }
 

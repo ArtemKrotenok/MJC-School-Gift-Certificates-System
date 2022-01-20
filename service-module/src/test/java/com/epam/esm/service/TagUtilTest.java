@@ -13,30 +13,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TagUtilTest {
 
     @Test
-    void convert_DTO_to_entity() {
-        TagDTO validTagDTO = TestDataUtil.getValidTagDTO();
-        Tag validTag = TestDataUtil.getValidTag();
+    void convert_DTO_entity() {
+        TagDTO validTagDTO = TestServiceDataUtil.getValidTagDTO();
+        Tag validTag = TestServiceDataUtil.getValidTag();
         Tag covertTag = TagUtil.convert(validTagDTO);
         assertThat(covertTag).isEqualTo(validTag);
     }
 
     @Test
-    void convert_DTO_NULL_to_entity() {
+    void convert_invalidDTO_null() {
         TagDTO nullTagDTO = null;
         Tag covertTagDTO = TagUtil.convert(nullTagDTO);
         assertThat(covertTagDTO).isNull();
     }
 
     @Test
-    void convert_entity_to_DTO() {
-        Tag validTag = TestDataUtil.getValidTag();
-        TagDTO validTagDTO = TestDataUtil.getValidTagDTO();
+    void convert_entity_DTO() {
+        Tag validTag = TestServiceDataUtil.getValidTag();
+        TagDTO validTagDTO = TestServiceDataUtil.getValidTagDTO();
         TagDTO covertTagDTO = TagUtil.convert(validTag);
         assertThat(covertTagDTO).isEqualTo(validTagDTO);
     }
 
     @Test
-    void convert_entity_NULL_to_DTO() {
+    void convert_invalidEntity_null() {
         Tag nullTag = null;
         TagDTO covertTagDTO = TagUtil.convert(nullTag);
         assertThat(covertTagDTO).isNull();
