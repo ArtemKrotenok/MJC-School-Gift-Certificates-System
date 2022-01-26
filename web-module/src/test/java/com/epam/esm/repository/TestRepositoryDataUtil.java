@@ -38,11 +38,11 @@ public class TestRepositoryDataUtil {
                 .createDate(GIFT_CERTIFICATE_TEST_CREATE_DATE)
                 .lastUpdateDate(GIFT_CERTIFICATE_TEST_LAST_UPDATE_DATE)
                 .price(GIFT_CERTIFICATE_TEST_PRICE)
-                .tagList(getValidTagList(COUNT_TEST_TAG_LIST))
+                .tags(getValidTags(COUNT_TEST_TAG_LIST))
                 .build();
     }
 
-    public static List<Tag> getValidTagList(int count) {
+    public static List<Tag> getValidTags(int count) {
         return Stream.generate(TestRepositoryDataUtil::getValidTag).limit(count).collect(Collectors.toList());
     }
 }

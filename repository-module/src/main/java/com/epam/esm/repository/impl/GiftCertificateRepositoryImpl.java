@@ -30,12 +30,11 @@ public class GiftCertificateRepositoryImpl extends GenericRepositoryImpl<GiftCer
 
     @Override
     public GiftCertificate findById(Long id) {
-        GiftCertificate giftCertificate = jdbcTemplate.query("SELECT * FROM gift_certificate WHERE id=?",
-                        new BeanPropertyRowMapper<>(GiftCertificate.class),
-                        id)
-                .stream().findAny().orElse(null);
+        GiftCertificate giftCertificate = getOneResult(jdbcTemplate.query("SELECT * FROM gift_certificate WHERE id=?",
+                new BeanPropertyRowMapper<>(GiftCertificate.class),
+                id));
         if (giftCertificate != null) {
-            giftCertificate.setTagList(getTagListForCertificate(giftCertificate));
+            giftCertificate.setTags(getTagsByGiftCertificateId(giftCertificate.getId()));
         }
         return giftCertificate;
     }
@@ -59,7 +58,7 @@ public class GiftCertificateRepositoryImpl extends GenericRepositoryImpl<GiftCer
         }, keyHolder);
         if (keyHolder.getKeys() != null) {
             long insertedId = (long) keyHolder.getKeys().get("id");
-            giftCertificateTagRepository.add(insertedId, giftCertificate.getTagList());
+            giftCertificateTagRepository.add(insertedId, giftCertificate.getTags());
             return insertedId;
         }
         return null;
@@ -79,7 +78,7 @@ public class GiftCertificateRepositoryImpl extends GenericRepositoryImpl<GiftCer
                 giftCertificate.getId());
         if (effectRows == ONE_RESULT) {
             giftCertificateTagRepository.deleteByGiftCertificateId(giftCertificate.getId());
-            giftCertificateTagRepository.add(giftCertificate.getId(), giftCertificate.getTagList());
+            giftCertificateTagRepository.add(giftCertificate.getId(), giftCertificate.getTags());
         }
         return effectRows;
     }
@@ -92,59 +91,94 @@ public class GiftCertificateRepositoryImpl extends GenericRepositoryImpl<GiftCer
 
     @Override
     public List<GiftCertificate> findByTag(String tag) {
-        List<GiftCertificate> giftCertificateList = jdbcTemplate.query("SELECT DISTINCT " +
+        List<GiftCertificate> giftCertificates = jdbcTemplate.query("SELECT DISTINCT " +
                         "gc.id, gc.name, gc.description, gc.price, gc.duration, gc.create_date, gc.last_update_date " +
                         "FROM gift_certificate AS gc " +
                         "JOIN gift_certificate_tag AS gct ON gc.id = gct.id_gift_certificate " +
                         "JOIN tag t ON gct.id_tag = t.id WHERE t.name = ? ORDER BY name ASC",
                 new BeanPropertyRowMapper<>(GiftCertificate.class),
                 tag);
-        if (giftCertificateList.size() > 0) {
-            giftCertificateList.forEach(element -> element.setTagList(getTagListForCertificate(element)));
+        if (!giftCertificates.isEmpty()) {
+            giftCertificates.forEach(element -> element.setTags(getTagsByGiftCertificateId(element.getId())));
         }
-        return giftCertificateList;
+        return giftCertificates;
     }
 
     @Override
     public List<GiftCertificate> findByName(String name) {
-        List<GiftCertificate> giftCertificateList = jdbcTemplate.query("SELECT * FROM gift_certificate WHERE name LIKE CONCAT( '%',?,'%') ORDER BY name ASC",
+        List<GiftCertificate> giftCertificates = jdbcTemplate.query("SELECT * FROM gift_certificate WHERE name LIKE CONCAT( '%',?,'%') ORDER BY name ASC",
                 new BeanPropertyRowMapper<>(GiftCertificate.class),
                 name);
-        if (giftCertificateList.size() > 0) {
-            giftCertificateList.forEach(element -> element.setTagList(getTagListForCertificate(element)));
+        if (!giftCertificates.isEmpty()) {
+            giftCertificates.forEach(element -> element.setTags(getTagsByGiftCertificateId(element.getId())));
         }
-        return giftCertificateList;
+        return giftCertificates;
     }
 
     @Override
     public List<GiftCertificate> findByDescription(String description) {
-        List<GiftCertificate> giftCertificateList = jdbcTemplate.query("SELECT * FROM gift_certificate WHERE description LIKE CONCAT( '%',?,'%') ORDER BY name ASC",
+        List<GiftCertificate> giftCertificates = jdbcTemplate.query("SELECT * FROM gift_certificate WHERE description LIKE CONCAT( '%',?,'%') ORDER BY name ASC",
                 new BeanPropertyRowMapper<>(GiftCertificate.class),
                 description);
-        if (!giftCertificateList.isEmpty()) {
-            giftCertificateList.forEach(element -> element.setTagList(getTagListForCertificate(element)));
+        if (!giftCertificates.isEmpty()) {
+            giftCertificates.forEach(element -> element.setTags(getTagsByGiftCertificateId(element.getId())));
         }
-        return giftCertificateList;
+        return giftCertificates;
+    }
+
+    @Override
+    public List<GiftCertificate> search(int startPosition, int itemsByPage, String tag, String name, String description) {
+        if (tag == null) {
+            tag = "%";
+        }
+        if (name == null) {
+            name = "%";
+        } else {
+            name = name.trim();
+            name = "%" + name + "%";
+        }
+        if (description == null) {
+            description = "%";
+        } else {
+            description = description.trim();
+            description = "%" + description + "%";
+        }
+        List<GiftCertificate> giftCertificates = jdbcTemplate.query("SELECT DISTINCT " +
+                        "gc.id, gc.name, gc.description, gc.price, gc.duration, gc.create_date, gc.last_update_date " +
+                        "FROM gift_certificate AS gc " +
+                        "JOIN gift_certificate_tag AS gct ON gc.id = gct.id_gift_certificate " +
+                        "JOIN tag t ON gct.id_tag = t.id " +
+                        "WHERE t.name LIKE ? " +
+                        "AND gc.name LIKE ? " +
+                        "AND gc.description LIKE ? " +
+                        "ORDER BY name ASC LIMIT ? OFFSET ?",
+                new BeanPropertyRowMapper<>(GiftCertificate.class),
+                tag, name, description, itemsByPage, startPosition);
+        if (!giftCertificates.isEmpty()) {
+            giftCertificates.forEach(element -> element.setTags(getTagsByGiftCertificateId(element.getId())));
+        }
+        return giftCertificates;
     }
 
     @Override
     public List<GiftCertificate> getAllByPageSorted(int startPosition, int itemsByPage) {
-        List<GiftCertificate> giftCertificateList = jdbcTemplate.query("SELECT * FROM gift_certificate ORDER BY name ASC LIMIT ? OFFSET ?",
+        List<GiftCertificate> giftCertificates = jdbcTemplate.query("SELECT * FROM gift_certificate ORDER BY name ASC LIMIT ? OFFSET ?",
                 new BeanPropertyRowMapper<>(GiftCertificate.class),
                 itemsByPage,
                 startPosition);
-        if (!giftCertificateList.isEmpty()) {
-            giftCertificateList.forEach(element -> element.setTagList(getTagListForCertificate(element)));
+        if (!giftCertificates.isEmpty()) {
+            giftCertificates.forEach(element -> element.setTags(getTagsByGiftCertificateId(element.getId())));
         }
-        return giftCertificateList;
+        return giftCertificates;
     }
 
-    private List<Tag> getTagListForCertificate(GiftCertificate giftCertificate) {
-        return giftCertificateTagRepository.findByGiftCertificateId(giftCertificate.getId());
+    private List<Tag> getTagsByGiftCertificateId(Long id) {
+        return giftCertificateTagRepository.findByGiftCertificateId(id);
     }
 
     @Override
     public long count() {
         return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM gift_certificate", Long.class);
     }
+
 }

@@ -22,9 +22,9 @@ public class TestServiceDataUtil {
     public static final String GIFT_CERTIFICATE_TEST_DESCRIPTION = "description_certificate";
     public static final long GIFT_CERTIFICATE_TEST_DURATION = 10L;
     public static final Timestamp GIFT_CERTIFICATE_TEST_CREATE_DATE = new Timestamp(1640988061000L);
-    public static final String GIFT_CERTIFICATE_TEST_CREATE_DATE_STRING = "2022-01-01T01:01:01.000";
+    public static final String GIFT_CERTIFICATE_TEST_CREATE_DATE_STRING = "2022-01-01T01:01:01";
     public static final Timestamp GIFT_CERTIFICATE_TEST_LAST_UPDATE_DATE = new Timestamp(1643666461000L);
-    public static final String GIFT_CERTIFICATE_TEST_LAST_UPDATE_DATE_STRING = "2022-02-01T01:01:01.000";
+    public static final String GIFT_CERTIFICATE_TEST_LAST_UPDATE_DATE_STRING = "2022-02-01T01:01:01";
     public static final BigDecimal GIFT_CERTIFICATE_TEST_PRICE = new BigDecimal(100);
     public static final String GIFT_CERTIFICATE_TEST_PRICE_STRING = "100";
     public static final int COUNT_TEST_TAG_LIST = 10;
@@ -54,7 +54,7 @@ public class TestServiceDataUtil {
                 .createDate(GIFT_CERTIFICATE_TEST_CREATE_DATE)
                 .lastUpdateDate(GIFT_CERTIFICATE_TEST_LAST_UPDATE_DATE)
                 .price(GIFT_CERTIFICATE_TEST_PRICE)
-                .tagList(getValidTagList(COUNT_TEST_TAG_LIST))
+                .tags(getValidTags(COUNT_TEST_TAG_LIST))
                 .build();
     }
 
@@ -67,23 +67,23 @@ public class TestServiceDataUtil {
                 .createDate(GIFT_CERTIFICATE_TEST_CREATE_DATE_STRING)
                 .lastUpdateDate(GIFT_CERTIFICATE_TEST_LAST_UPDATE_DATE_STRING)
                 .price(GIFT_CERTIFICATE_TEST_PRICE_STRING)
-                .tagList(getValidTagDTOList(COUNT_TEST_TAG_DTO_LIST))
+                .tags(getValidTagDTOs(COUNT_TEST_TAG_DTO_LIST))
                 .build();
     }
 
-    public static List<Tag> getValidTagList(int count) {
+    public static List<Tag> getValidTags(int count) {
         return Stream.generate(TestServiceDataUtil::getValidTag).limit(count).collect(Collectors.toList());
     }
 
-    public static List<TagDTO> getValidTagDTOList(int count) {
+    public static List<TagDTO> getValidTagDTOs(int count) {
         return Stream.generate(TestServiceDataUtil::getValidTagDTO).limit(count).collect(Collectors.toList());
     }
 
-    public static List<GiftCertificate> getValidGiftCertificateList(int count) {
+    public static List<GiftCertificate> getValidGiftCertificates(int count) {
         return Stream.generate(TestServiceDataUtil::getValidGiftCertificate).limit(count).collect(Collectors.toList());
     }
 
-    public static List<GiftCertificateDTO> getValidGiftCertificateDTOList(int count) {
+    public static List<GiftCertificateDTO> getValidGiftCertificateDTOs(int count) {
         return Stream.generate(TestServiceDataUtil::getValidGiftCertificateDTO).limit(count).collect(Collectors.toList());
     }
 }

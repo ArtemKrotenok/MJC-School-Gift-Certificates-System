@@ -11,7 +11,6 @@ import com.epam.esm.service.util.PaginationUtil;
 import com.epam.esm.service.util.ResponseDTOUtil;
 import com.epam.esm.service.util.TagUtil;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -19,21 +18,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Slf4j
 @AllArgsConstructor
 public class TagServiceImpl implements TagService {
 
-    public static final int FIST_PAGE = 1;
     public static final int RESULT_ONE_RECORD = 1;
     private TagRepository tagRepository;
 
     @Override
     public SuccessResponseDTO create(TagDTO tagDTO) throws GiftCertificateServiceException {
-        String errorValidMessage = getErrorValid(tagDTO);
-        if (errorValidMessage != null) {
-            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
-                    ResponseCode.NOT_VALID_INPUT_DATA, errorValidMessage));
-        }
+        validation(tagDTO);
         if (tagRepository.findByName(tagDTO.getName()) != null) {
             throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
                     ResponseCode.NOT_CREATE, "tag by name: " + tagDTO.getName() + " already exists"));
@@ -48,11 +41,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public TagDTO findById(Long id) throws GiftCertificateServiceException {
-        String errorValidMessage = getErrorValid(id);
-        if (errorValidMessage != null) {
-            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
-                    ResponseCode.NOT_VALID_INPUT_DATA, errorValidMessage));
-        }
+        validation(id);
         Tag tag = tagRepository.findById(id);
         if (tag != null) {
             return TagUtil.convert(tag);
@@ -63,11 +52,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public SuccessResponseDTO deleteById(Long id) throws GiftCertificateServiceException {
-        String errorValidMessage = getErrorValid(id);
-        if (errorValidMessage != null) {
-            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
-                    ResponseCode.NOT_VALID_INPUT_DATA, errorValidMessage));
-        }
+        validation(id);
         Tag tag = tagRepository.findById(id);
         if (tag == null) {
             throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
@@ -83,42 +68,64 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<TagDTO> getAllByPageSorted(Integer page) throws GiftCertificateServiceException {
-        if (page < 0) {
-            page = FIST_PAGE;
-        }
+        validation(page);
         int startPosition = PaginationUtil.getPositionByPage(page);
-        List<Tag> tagList = tagRepository.getAllByPageSorted(startPosition, PaginationUtil.ITEMS_BY_PAGE);
-        return checkAndReturnResult(tagList);
+        List<Tag> tags = tagRepository.getAllByPageSorted(startPosition, PaginationUtil.ITEMS_BY_PAGE);
+        return convertResults(tags);
     }
 
     @Override
     public List<TagDTO> getAllSorted() throws GiftCertificateServiceException {
-        List<Tag> tagList = tagRepository.getAllSorted();
-        return checkAndReturnResult(tagList);
+        List<Tag> tags = tagRepository.getAllSorted();
+        return convertResults(tags);
     }
 
-    private List<TagDTO> checkAndReturnResult(List<Tag> tagList) throws GiftCertificateServiceException {
-        if (!tagList.isEmpty()) {
-            return tagList.stream().map(TagUtil::convert).collect(Collectors.toList());
+    private List<TagDTO> convertResults(List<Tag> tags) throws GiftCertificateServiceException {
+        if (!tags.isEmpty()) {
+            return tags.stream().map(TagUtil::convert).collect(Collectors.toList());
         }
         throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
                 ResponseCode.NOT_FOUND));
     }
 
-    private String getErrorValid(Long id) {
-        if (id == null) {
-            return ("id can't be empty");
+    private void validation(Integer page) throws GiftCertificateServiceException {
+        String errorMessage = null;
+        if (page == null) {
+            errorMessage = "page can't be empty";
+        } else {
+            if (page <= 0) {
+                errorMessage = "page must > 0";
+            }
         }
-        if (id <= 0) {
-            return ("id must > 0");
+        if (errorMessage != null) {
+            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                    ResponseCode.NOT_VALID_INPUT_DATA, errorMessage));
         }
-        return null;
     }
 
-    private String getErrorValid(TagDTO tagDTO) {
-        if (tagDTO.getName() == null || tagDTO.getName().equals("")) {
-            return ("tag name can't be empty");
+    private void validation(Long id) throws GiftCertificateServiceException {
+        String errorMessage = null;
+        if (id == null) {
+            errorMessage = "id can't be empty";
+        } else {
+            if (id <= 0) {
+                errorMessage = "id must > 0";
+            }
         }
-        return null;
+        if (errorMessage != null) {
+            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                    ResponseCode.NOT_VALID_INPUT_DATA, errorMessage));
+        }
+    }
+
+    private void validation(TagDTO tagDTO) throws GiftCertificateServiceException {
+        String errorMessage = null;
+        if (tagDTO.getName() == null || tagDTO.getName().equals("")) {
+            errorMessage = "tag name can't be empty";
+        }
+        if (errorMessage != null) {
+            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                    ResponseCode.NOT_VALID_INPUT_DATA, errorMessage));
+        }
     }
 }

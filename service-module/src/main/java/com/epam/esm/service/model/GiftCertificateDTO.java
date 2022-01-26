@@ -20,5 +20,5 @@ public class GiftCertificateDTO {
     private Long duration;
     private String createDate;
     private String lastUpdateDate;
-    private List<TagDTO> tagList;
+    private List<TagDTO> tags;
 }

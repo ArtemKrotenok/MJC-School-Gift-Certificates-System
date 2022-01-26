@@ -22,6 +22,6 @@ public class GiftCertificate {
     private Long duration;
     private Timestamp createDate;
     private Timestamp lastUpdateDate;
-    private List<Tag> tagList;
+    private List<Tag> tags;
 
 }

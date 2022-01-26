@@ -34,13 +34,13 @@ class TagRepositoryTest {
     private TagRepository tagRepository;
 
     @Test
-    void findAll_returnTags() {
+    void findAll_returnsTags() {
         List<Tag> tags = tagRepository.findAll();
         assertEquals(tags.size(), tagRepository.count());
     }
 
     @Test
-    void add_validTag_idNewRecord() {
+    void add_givenValidTag_returnsIdNewRecord() {
         Tag tag = TestRepositoryDataUtil.getValidTag();
         Long idNewRecord = tagRepository.add(tag);
         assertThat(idNewRecord).isNotNull();
@@ -48,7 +48,7 @@ class TagRepositoryTest {
     }
 
     @Test
-    void add_validTag_countTagInDBIncrement() {
+    void add_givenValidTag_returnsCountTagInDBIncrement() {
         long tagsBeforeAdd = tagRepository.count();
         Tag tag = TestRepositoryDataUtil.getValidTag();
         tagRepository.add(tag);
@@ -57,27 +57,27 @@ class TagRepositoryTest {
     }
 
     @Test
-    void getTagByName_validName_validTag() {
+    void getTagByName_givenValidName_returnsValidTag() {
         Tag tag = tagRepository.findByName(TEST_TAG_NAME_EXIST_IN_DB);
         assertThat(tag).isNotNull();
         assertEquals(tag.getName(), TEST_TAG_NAME_EXIST_IN_DB);
     }
 
     @Test
-    void getTagByName_invalidName_null() {
+    void getTagByName_givenInvalidName_returnsNull() {
         Tag tag = tagRepository.findByName(TEST_TAG_NAME_NO_EXIST_IN_DB);
         assertThat(tag).isNull();
     }
 
     @Test
-    void getAllTagSorted_returnTags() {
+    void getAllTagSorted_returnsTags() {
         List<Tag> tags = tagRepository.getAllSorted();
         assertFalse(tags.isEmpty());
         assertTrue(isSorted(tags));
     }
 
     @Test
-    void getAllTagByPageSorted_returnSortedTags() {
+    void getAllTagByPageSorted_returnsSortedTags() {
         List<Tag> tags = tagRepository.getAllByPageSorted(START_POSITION, ITEMS_BY_PAGE);
         assertFalse(tags.isEmpty());
         assertTrue(isSorted(tags));
@@ -85,20 +85,20 @@ class TagRepositoryTest {
     }
 
     @Test
-    void findById_validId_tag() {
+    void findById_givenValidId_returnsTag() {
         Tag tag = tagRepository.findById(TEST_TAG_ID_EXIST_IN_DB);
         assertThat(tag).isNotNull();
         assertEquals(tag.getId(), TEST_TAG_ID_EXIST_IN_DB);
     }
 
     @Test
-    void findById_invalidId_null() {
+    void findById_givenInvalidId_returnsNull() {
         Tag tag = tagRepository.findById(TEST_TAG_ID_NO_EXIST_IN_DB);
         assertThat(tag).isNull();
     }
 
     @Test
-    void delete_validId_recordEffectOne() {
+    void delete_givenValidId_returnsRecordEffectOne() {
         Tag tag = tagRepository.findById(TEST_TAG_ID_FOR_DELETE);
         assertThat(tag).isNotNull();
         int effectRows = tagRepository.delete(tag);
@@ -108,7 +108,7 @@ class TagRepositoryTest {
     }
 
     @Test
-    void update_validTag_recordEffectOne() {
+    void update_givenValidTag_returnsRecordEffectOne() {
         Tag dbTag = tagRepository.findById(TEST_TAG_ID_EXIST_IN_DB);
         dbTag.setName(NEW_TAG_NAME);
         int effectRows = tagRepository.update(dbTag);

@@ -26,10 +26,9 @@ public class GiftCertificateTagRepositoryImpl extends GenericRepositoryImpl<Gift
 
     @Override
     public GiftCertificateTag findById(Long id) {
-        return jdbcTemplate.query("SELECT * FROM gift_certificate_tag WHERE id=?",
-                        new BeanPropertyRowMapper<>(GiftCertificateTag.class),
-                        id)
-                .stream().findAny().orElse(null);
+        return getOneResult(jdbcTemplate.query("SELECT * FROM gift_certificate_tag WHERE id=?",
+                new BeanPropertyRowMapper<>(GiftCertificateTag.class),
+                id));
     }
 
     @Override
@@ -54,9 +53,9 @@ public class GiftCertificateTagRepositoryImpl extends GenericRepositoryImpl<Gift
     }
 
     @Override
-    public void add(Long idGiftCertificate, List<Tag> tagList) {
-        List<Tag> saveTagList = tagRepository.updateTags(tagList);
-        saveTagList.forEach(element ->
+    public void add(Long idGiftCertificate, List<Tag> tags) {
+        List<Tag> saveTags = tagRepository.updateTags(tags);
+        saveTags.forEach(element ->
                 add(GiftCertificateTag.builder()
                         .idGiftCertificate(idGiftCertificate)
                         .idTag(element.getId())
@@ -73,19 +72,20 @@ public class GiftCertificateTagRepositoryImpl extends GenericRepositoryImpl<Gift
 
     @Override
     public List<Tag> findByGiftCertificateId(Long idGiftCertificate) {
-        List<Long> idTagList = jdbcTemplate.queryForList(
+        List<Long> idTags = jdbcTemplate.queryForList(
                 "SELECT id_tag FROM gift_certificate_tag WHERE id_gift_certificate=?",
                 Long.class,
                 idGiftCertificate);
-        List<Tag> resultTagList = new ArrayList<>();
-        for (Long idTag : idTagList) {
-            resultTagList.add(tagRepository.findById(idTag));
+        List<Tag> resultTags = new ArrayList<>();
+        for (Long idTag : idTags) {
+            resultTags.add(tagRepository.findById(idTag));
         }
-        return resultTagList;
+        return resultTags;
     }
 
     @Override
     public long count() {
         return jdbcTemplate.queryForObject("SELECT COUNT(*) FROM gift_certificate_tag", Long.class);
     }
+
 }

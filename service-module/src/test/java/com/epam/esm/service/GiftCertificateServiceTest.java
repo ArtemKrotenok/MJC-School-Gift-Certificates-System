@@ -7,17 +7,15 @@ import com.epam.esm.service.imp.GiftCertificateServiceImpl;
 import com.epam.esm.service.model.GiftCertificateDTO;
 import com.epam.esm.service.model.ResponseCode;
 import com.epam.esm.service.model.SuccessResponseDTO;
-import com.epam.esm.service.util.PaginationUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-
 import static com.epam.esm.repository.impl.GiftCertificateRepositoryImpl.ONE_RESULT;
-import static com.epam.esm.service.TestServiceDataUtil.*;
+import static com.epam.esm.service.TestServiceDataUtil.GIFT_CERTIFICATE_TEST_ID;
+import static com.epam.esm.service.TestServiceDataUtil.GIFT_CERTIFICATE_TEST_ID_NOT_EXIST;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -37,7 +35,7 @@ class GiftCertificateServiceTest {
     }
 
     @Test
-    void creat_validGiftCertificate_SuccessResponseDTO() throws GiftCertificateServiceException {
+    void create_givenValidGiftCertificate_returnsSuccessResponseDTO() throws GiftCertificateServiceException {
         GiftCertificateDTO giftCertificateDTO = TestServiceDataUtil.getValidGiftCertificateDTO();
         when(giftCertificateRepository.add(any(GiftCertificate.class))).thenReturn(1L);
         SuccessResponseDTO successResponseDTO = giftCertificateService.create(giftCertificateDTO);
@@ -46,38 +44,34 @@ class GiftCertificateServiceTest {
     }
 
     @Test
-    void creat_invalidGiftCertificate_GiftCertificateServiceException() {
+    void create_givenInvalidGiftCertificate_returnsGiftCertificateServiceException() {
         GiftCertificateDTO giftCertificateDTO = TestServiceDataUtil.getValidGiftCertificateDTO();
         giftCertificateDTO.setName(null);
-        Exception exception = assertThrows(Exception.class, () -> {
+        GiftCertificateServiceException exception = assertThrows(GiftCertificateServiceException.class, () -> {
             giftCertificateService.create(giftCertificateDTO);
         });
-        assertEquals(GiftCertificateServiceException.class, exception.getClass());
-        assertEquals(
-                ((GiftCertificateServiceException) exception).getErrorResponseDTO().getErrorCode(),
+        assertEquals(exception.getErrorResponseDTO().getErrorCode(),
                 ResponseCode.NOT_VALID_INPUT_DATA.getCode());
     }
 
     @Test
-    void findById_validId_GiftCertificateDTO() throws GiftCertificateServiceException {
+    void findById_givenValidId_returnsGiftCertificateDTO() throws GiftCertificateServiceException {
         when(giftCertificateRepository.findById(GIFT_CERTIFICATE_TEST_ID)).thenReturn(TestServiceDataUtil.getValidGiftCertificate());
         GiftCertificateDTO finedGiftCertificateDTO = giftCertificateService.findById(GIFT_CERTIFICATE_TEST_ID);
         assertEquals(finedGiftCertificateDTO, TestServiceDataUtil.getValidGiftCertificateDTO());
     }
 
     @Test
-    void findById_invalidId_GiftCertificateServiceException() {
-        Exception exception = assertThrows(Exception.class, () -> {
+    void findById_givenInvalidId_returnsGiftCertificateServiceException() {
+        GiftCertificateServiceException exception = assertThrows(GiftCertificateServiceException.class, () -> {
             giftCertificateService.findById(GIFT_CERTIFICATE_TEST_ID_NOT_EXIST);
         });
-        assertEquals(GiftCertificateServiceException.class, exception.getClass());
-        assertEquals(
-                ((GiftCertificateServiceException) exception).getErrorResponseDTO().getErrorCode(),
+        assertEquals(exception.getErrorResponseDTO().getErrorCode(),
                 ResponseCode.NOT_FOUND.getCode());
     }
 
     @Test
-    void deleteById_validId_SuccessResponseDTO() throws GiftCertificateServiceException {
+    void deleteById_givenValidId_returnsSuccessResponseDTO() throws GiftCertificateServiceException {
         GiftCertificate validGiftCertificate = TestServiceDataUtil.getValidGiftCertificate();
         when(giftCertificateRepository.findById(GIFT_CERTIFICATE_TEST_ID)).thenReturn(validGiftCertificate);
         when(giftCertificateRepository.delete(validGiftCertificate)).thenReturn(ONE_RESULT);
@@ -87,19 +81,17 @@ class GiftCertificateServiceTest {
     }
 
     @Test
-    void deleteById_invalidId_GiftCertificateServiceException() {
+    void deleteById_givenInvalidId_returnsGiftCertificateServiceException() {
         when(giftCertificateRepository.findById(GIFT_CERTIFICATE_TEST_ID_NOT_EXIST)).thenReturn(null);
-        Exception exception = assertThrows(Exception.class, () -> {
+        GiftCertificateServiceException exception = assertThrows(GiftCertificateServiceException.class, () -> {
             giftCertificateService.deleteById(GIFT_CERTIFICATE_TEST_ID_NOT_EXIST);
         });
-        assertEquals(GiftCertificateServiceException.class, exception.getClass());
-        assertEquals(
-                ((GiftCertificateServiceException) exception).getErrorResponseDTO().getErrorCode(),
+        assertEquals(exception.getErrorResponseDTO().getErrorCode(),
                 ResponseCode.NOT_FOUND.getCode());
     }
 
     @Test
-    void update_validGiftCertificateDTO_SuccessResponseDTO() throws GiftCertificateServiceException {
+    void update_givenValidGiftCertificateDTO_returnsSuccessResponseDTO() throws GiftCertificateServiceException {
         GiftCertificate validGiftCertificate = TestServiceDataUtil.getValidGiftCertificate();
         GiftCertificateDTO validGiftCertificateDTO = TestServiceDataUtil.getValidGiftCertificateDTO();
         when(giftCertificateRepository.findById(validGiftCertificate.getId())).thenReturn(validGiftCertificate);
@@ -107,13 +99,5 @@ class GiftCertificateServiceTest {
         SuccessResponseDTO successResponseDTO = giftCertificateService.update(validGiftCertificateDTO);
         assertThat(successResponseDTO).isNotNull();
         assertEquals(successResponseDTO.getCode(), ResponseCode.UPDATE.getCode());
-    }
-
-    @Test
-    void getAllByPageSorted_returnSortedCertificateDTOs() throws GiftCertificateServiceException {
-        when(giftCertificateRepository.getAllByPageSorted(0, PaginationUtil.ITEMS_BY_PAGE)).
-                thenReturn(TestServiceDataUtil.getValidGiftCertificateList(TestServiceDataUtil.COUNT_TEST_GIFT_CERTIFICATE_LIST));
-        List<GiftCertificateDTO> finedGiftCertificateDTOList = giftCertificateService.getAllByPageSorted(1);
-        assertEquals(finedGiftCertificateDTOList, TestServiceDataUtil.getValidGiftCertificateDTOList(COUNT_TEST_GIFT_CERTIFICATE_LIST));
     }
 }

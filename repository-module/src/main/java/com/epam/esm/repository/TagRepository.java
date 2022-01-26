@@ -12,5 +12,5 @@ public interface TagRepository extends GenericRepository<Tag> {
 
     List<Tag> getAllSorted();
 
-    List<Tag> updateTags(List<Tag> tagList);
+    List<Tag> updateTags(List<Tag> tags);
 }

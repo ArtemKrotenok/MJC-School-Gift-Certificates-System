@@ -34,13 +34,13 @@ class GiftCertificateRepositoryTest {
     private GiftCertificateRepository giftCertificateRepository;
 
     @Test
-    void findAll_returnGiftCertificates() {
+    void findAll_returnsGiftCertificates() {
         List<GiftCertificate> giftCertificates = giftCertificateRepository.findAll();
         assertEquals(giftCertificates.size(), giftCertificateRepository.count());
     }
 
     @Test
-    void add_validGiftCertificate_idNewRecord() {
+    void add_givenValidGiftCertificate_returnsIdNewRecord() {
         GiftCertificate giftCertificate = TestRepositoryDataUtil.getValidGiftCertificate();
         Long idNewRecord = giftCertificateRepository.add(giftCertificate);
         assertThat(idNewRecord).isNotNull();
@@ -48,7 +48,7 @@ class GiftCertificateRepositoryTest {
     }
 
     @Test
-    void add_validGiftCertificate_countGiftCertificateInDBIncrement() {
+    void add_givenValidGiftCertificate_returnsCountGiftCertificateInDBIncrement() {
         long giftCertificatesBeforeAdd = giftCertificateRepository.count();
         GiftCertificate giftCertificate = TestRepositoryDataUtil.getValidGiftCertificate();
         giftCertificateRepository.add(giftCertificate);
@@ -57,7 +57,7 @@ class GiftCertificateRepositoryTest {
     }
 
     @Test
-    void getGiftCertificateByName_validName_validGiftCertificate() {
+    void getGiftCertificateByName_givenValidName_returnsValidGiftCertificate() {
         List<GiftCertificate> giftCertificates = giftCertificateRepository.findByName(TEST_GIFT_CERTIFICATE_NAME_EXIST_IN_DB);
         assertThat(giftCertificates).isNotNull();
         giftCertificates.forEach(
@@ -66,13 +66,13 @@ class GiftCertificateRepositoryTest {
     }
 
     @Test
-    void getGiftCertificateByName_invalidName_null() {
+    void getGiftCertificateByName_givenInvalidName_returnsNull() {
         List<GiftCertificate> giftCertificates = giftCertificateRepository.findByName(TEST_GIFT_CERTIFICATE_NAME_NO_EXIST_IN_DB);
         assertTrue(giftCertificates.isEmpty());
     }
 
     @Test
-    void getAllByPageSorted_returnSortedGiftCertificates() {
+    void getAllByPageSorted_returnsSortedGiftCertificates() {
         List<GiftCertificate> giftCertificates = giftCertificateRepository.getAllByPageSorted(START_POSITION, ITEMS_BY_PAGE);
         assertFalse(giftCertificates.isEmpty());
         assertTrue(isSorted(giftCertificates));
@@ -80,20 +80,20 @@ class GiftCertificateRepositoryTest {
     }
 
     @Test
-    void findById_validId_giftCertificate() {
+    void findById_givenValidId_returnsGiftCertificate() {
         GiftCertificate giftCertificate = giftCertificateRepository.findById(TEST_GIFT_CERTIFICATE_ID_EXIST_IN_DB);
         assertThat(giftCertificate).isNotNull();
         assertEquals(giftCertificate.getId(), TEST_GIFT_CERTIFICATE_ID_EXIST_IN_DB);
     }
 
     @Test
-    void findById_invalidId_null() {
+    void findById_givenInvalidId_returnsNull() {
         GiftCertificate giftCertificate = giftCertificateRepository.findById(TEST_GIFT_CERTIFICATE_ID_NO_EXIST_IN_DB);
         assertThat(giftCertificate).isNull();
     }
 
     @Test
-    void delete_validId_recordEffectOne() {
+    void delete_givenValidId_returnsRecordEffectOne() {
         GiftCertificate giftCertificate = giftCertificateRepository.findById(TEST_GIFT_CERTIFICATE_ID_FOR_DELETE);
         assertThat(giftCertificate).isNotNull();
         int effectRows = giftCertificateRepository.delete(giftCertificate);
@@ -103,7 +103,7 @@ class GiftCertificateRepositoryTest {
     }
 
     @Test
-    void update_validGiftCertificate_recordEffectOne() {
+    void update_givenValidGiftCertificate_returnsRecordEffectOne() {
         GiftCertificate dbGiftCertificate = giftCertificateRepository.findById(TEST_GIFT_CERTIFICATE_ID_EXIST_IN_DB);
         dbGiftCertificate.setName(NEW_GIFT_CERTIFICATE_NAME);
         int effectRows = giftCertificateRepository.update(dbGiftCertificate);

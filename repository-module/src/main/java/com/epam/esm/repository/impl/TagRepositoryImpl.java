@@ -22,16 +22,14 @@ public class TagRepositoryImpl extends GenericRepositoryImpl<Tag> implements Tag
 
     @Override
     public List<Tag> findAll() {
-
         return jdbcTemplate.query("SELECT * FROM tag", new BeanPropertyRowMapper<>(Tag.class));
     }
 
     @Override
     public Tag findByName(String name) {
-        return jdbcTemplate.query("SELECT * FROM tag WHERE name=?",
-                        new BeanPropertyRowMapper<>(Tag.class),
-                        name)
-                .stream().findAny().orElse(null);
+        return getOneResult(jdbcTemplate.query("SELECT * FROM tag WHERE name=?",
+                new BeanPropertyRowMapper<>(Tag.class),
+                name));
     }
 
     @Override
@@ -49,9 +47,9 @@ public class TagRepositoryImpl extends GenericRepositoryImpl<Tag> implements Tag
     }
 
     @Override
-    public List<Tag> updateTags(List<Tag> tagList) {
+    public List<Tag> updateTags(List<Tag> tags) {
         List<Tag> resultList = new ArrayList<>();
-        for (Tag tag : tagList) {
+        for (Tag tag : tags) {
             Tag tagBD = findByName(tag.getName());
             if (tagBD == null) {
                 tagBD = Tag.builder()
@@ -66,10 +64,9 @@ public class TagRepositoryImpl extends GenericRepositoryImpl<Tag> implements Tag
 
     @Override
     public Tag findById(Long id) {
-        return jdbcTemplate.query("SELECT * FROM tag WHERE id=?",
-                        new BeanPropertyRowMapper<>(Tag.class),
-                        id)
-                .stream().findAny().orElse(null);
+        return getOneResult(jdbcTemplate.query("SELECT * FROM tag WHERE id=?",
+                new BeanPropertyRowMapper<>(Tag.class),
+                id));
     }
 
     @Override

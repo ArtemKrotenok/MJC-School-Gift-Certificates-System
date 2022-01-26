@@ -13,4 +13,6 @@ public interface GiftCertificateRepository extends GenericRepository<GiftCertifi
     List<GiftCertificate> findByName(String name);
 
     List<GiftCertificate> findByDescription(String description);
+
+    List<GiftCertificate> search(int startPosition, int itemsByPage, String tag, String name, String description);
 }

@@ -13,7 +13,8 @@ import java.util.stream.Collectors;
 
 public class GiftCertificateUtil {
 
-    public static final String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+    public static final String DATE_PATTERN = "yyyy-MM-dd'T'HH:mm:ss";
+    public static final String DEFULT_TAG_NAME = "all";
 
     public static GiftCertificateDTO convert(GiftCertificate giftCertificate) {
         if (giftCertificate == null) {
@@ -28,8 +29,8 @@ public class GiftCertificateUtil {
                 .createDate(dateConvert(giftCertificate.getCreateDate()))
                 .lastUpdateDate(dateConvert(giftCertificate.getLastUpdateDate()))
                 .build();
-        if (giftCertificate.getTagList() != null) {
-            giftCertificateDTO.setTagList(giftCertificate.getTagList().stream().map(TagUtil::convert).collect(Collectors.toList()));
+        if (giftCertificate.getTags() != null) {
+            giftCertificateDTO.setTags(giftCertificate.getTags().stream().map(TagUtil::convert).collect(Collectors.toList()));
         }
         return giftCertificateDTO;
     }
@@ -46,8 +47,8 @@ public class GiftCertificateUtil {
                 .build();
         BigDecimal price = new BigDecimal(giftCertificateDTO.getPrice());
         giftCertificate.setPrice(price);
-        if (giftCertificateDTO.getTagList() != null) {
-            giftCertificate.setTagList(giftCertificateDTO.getTagList().stream().map(TagUtil::convert).collect(Collectors.toList()));
+        if (giftCertificateDTO.getTags() != null) {
+            giftCertificate.setTags(giftCertificateDTO.getTags().stream().map(TagUtil::convert).collect(Collectors.toList()));
         }
         if (giftCertificateDTO.getCreateDate() == null) {
             giftCertificate.setCreateDate(Timestamp.valueOf(LocalDateTime.now()));

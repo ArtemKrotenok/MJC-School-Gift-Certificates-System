@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GiftCertificateUtilTest {
 
     @Test
-    void convert_DTO_entity() {
+    void convert_givenGiftCertificateDTO_returnsGiftCertificate() {
         GiftCertificateDTO validGiftCertificateDTO = TestServiceDataUtil.getValidGiftCertificateDTO();
         GiftCertificate validGiftCertificate = TestServiceDataUtil.getValidGiftCertificate();
         GiftCertificate covertGiftCertificate = GiftCertificateUtil.convert(validGiftCertificateDTO);
@@ -21,14 +21,14 @@ class GiftCertificateUtilTest {
     }
 
     @Test
-    void convert_invalidDTO_null() {
+    void convert_givenInvalidGiftCertificateDTO_returnsNull() {
         GiftCertificateDTO nullGiftCertificateDTO = null;
         GiftCertificate covertGiftCertificateDTO = GiftCertificateUtil.convert(nullGiftCertificateDTO);
         assertThat(covertGiftCertificateDTO).isNull();
     }
 
     @Test
-    void convert_entity_DTO() {
+    void convert_givenGiftCertificate_returnsGiftCertificateDTO() {
         GiftCertificate validGiftCertificate = TestServiceDataUtil.getValidGiftCertificate();
         GiftCertificateDTO validGiftCertificateDTO = TestServiceDataUtil.getValidGiftCertificateDTO();
         GiftCertificateDTO covertGiftCertificateDTO = GiftCertificateUtil.convert(validGiftCertificate);
@@ -36,7 +36,7 @@ class GiftCertificateUtilTest {
     }
 
     @Test
-    void convert_invalidEntity_null() {
+    void convert_givenInvalidGiftCertificate_returnsNull() {
         GiftCertificate nullGiftCertificate = null;
         GiftCertificateDTO covertGiftCertificateDTO = GiftCertificateUtil.convert(nullGiftCertificate);
         assertThat(covertGiftCertificateDTO).isNull();
