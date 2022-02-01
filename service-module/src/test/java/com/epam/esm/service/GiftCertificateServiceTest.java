@@ -6,7 +6,6 @@ import com.epam.esm.service.exception.GiftCertificateServiceException;
 import com.epam.esm.service.imp.GiftCertificateServiceImpl;
 import com.epam.esm.service.model.GiftCertificateDTO;
 import com.epam.esm.service.model.ResponseCode;
-import com.epam.esm.service.model.SuccessResponseDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static com.epam.esm.repository.impl.GiftCertificateRepositoryImpl.ONE_RESULT;
 import static com.epam.esm.service.TestServiceDataUtil.GIFT_CERTIFICATE_TEST_ID;
 import static com.epam.esm.service.TestServiceDataUtil.GIFT_CERTIFICATE_TEST_ID_NOT_EXIST;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -35,12 +33,10 @@ class GiftCertificateServiceTest {
     }
 
     @Test
-    void create_givenValidGiftCertificate_returnsSuccessResponseDTO() throws GiftCertificateServiceException {
+    void create_givenValidGiftCertificate() {
         GiftCertificateDTO giftCertificateDTO = TestServiceDataUtil.getValidGiftCertificateDTO();
         when(giftCertificateRepository.add(any(GiftCertificate.class))).thenReturn(1L);
-        SuccessResponseDTO successResponseDTO = giftCertificateService.create(giftCertificateDTO);
-        assertThat(successResponseDTO).isNotNull();
-        assertEquals(successResponseDTO.getCode(), ResponseCode.CREATE.getCode());
+        giftCertificateService.create(giftCertificateDTO);
     }
 
     @Test
@@ -55,7 +51,7 @@ class GiftCertificateServiceTest {
     }
 
     @Test
-    void findById_givenValidId_returnsGiftCertificateDTO() throws GiftCertificateServiceException {
+    void findById_givenValidId_returnsGiftCertificateDTO() {
         when(giftCertificateRepository.findById(GIFT_CERTIFICATE_TEST_ID)).thenReturn(TestServiceDataUtil.getValidGiftCertificate());
         GiftCertificateDTO finedGiftCertificateDTO = giftCertificateService.findById(GIFT_CERTIFICATE_TEST_ID);
         assertEquals(finedGiftCertificateDTO, TestServiceDataUtil.getValidGiftCertificateDTO());
@@ -71,13 +67,11 @@ class GiftCertificateServiceTest {
     }
 
     @Test
-    void deleteById_givenValidId_returnsSuccessResponseDTO() throws GiftCertificateServiceException {
+    void deleteById_givenValidId() {
         GiftCertificate validGiftCertificate = TestServiceDataUtil.getValidGiftCertificate();
         when(giftCertificateRepository.findById(GIFT_CERTIFICATE_TEST_ID)).thenReturn(validGiftCertificate);
         when(giftCertificateRepository.delete(validGiftCertificate)).thenReturn(ONE_RESULT);
-        SuccessResponseDTO successResponseDTO = giftCertificateService.deleteById(GIFT_CERTIFICATE_TEST_ID);
-        assertThat(successResponseDTO).isNotNull();
-        assertEquals(successResponseDTO.getCode(), ResponseCode.DELETE.getCode());
+        giftCertificateService.deleteById(GIFT_CERTIFICATE_TEST_ID);
     }
 
     @Test
@@ -91,13 +85,11 @@ class GiftCertificateServiceTest {
     }
 
     @Test
-    void update_givenValidGiftCertificateDTO_returnsSuccessResponseDTO() throws GiftCertificateServiceException {
+    void update_givenValidGiftCertificateDTO_returnsSuccessResponseDTO() {
         GiftCertificate validGiftCertificate = TestServiceDataUtil.getValidGiftCertificate();
         GiftCertificateDTO validGiftCertificateDTO = TestServiceDataUtil.getValidGiftCertificateDTO();
         when(giftCertificateRepository.findById(validGiftCertificate.getId())).thenReturn(validGiftCertificate);
         when(giftCertificateRepository.update(any(GiftCertificate.class))).thenReturn(ONE_RESULT);
-        SuccessResponseDTO successResponseDTO = giftCertificateService.update(validGiftCertificateDTO);
-        assertThat(successResponseDTO).isNotNull();
-        assertEquals(successResponseDTO.getCode(), ResponseCode.UPDATE.getCode());
+        giftCertificateService.update(validGiftCertificateDTO);
     }
 }

@@ -5,7 +5,6 @@ import com.epam.esm.repository.model.Tag;
 import com.epam.esm.service.exception.GiftCertificateServiceException;
 import com.epam.esm.service.imp.TagServiceImpl;
 import com.epam.esm.service.model.ResponseCode;
-import com.epam.esm.service.model.SuccessResponseDTO;
 import com.epam.esm.service.model.TagDTO;
 import com.epam.esm.service.util.PaginationUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.List;
 
 import static com.epam.esm.service.TestServiceDataUtil.*;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,12 +35,10 @@ class TagServiceTest {
     }
 
     @Test
-    void create_givenValidTag_returnsSuccessResponseDTO() throws GiftCertificateServiceException {
+    void create_givenValidTag() {
         TagDTO tagDTO = TestServiceDataUtil.getValidTagDTO();
         when(tagRepository.add(any(Tag.class))).thenReturn(1L);
-        SuccessResponseDTO successResponseDTO = tagService.create(tagDTO);
-        assertThat(successResponseDTO).isNotNull();
-        assertEquals(successResponseDTO.getCode(), ResponseCode.CREATE.getCode());
+        tagService.create(tagDTO);
     }
 
     @Test
@@ -57,7 +53,7 @@ class TagServiceTest {
     }
 
     @Test
-    void findById_givenValidId_returnsTagDTO() throws GiftCertificateServiceException {
+    void findById_givenValidId_returnsTagDTO() {
         when(tagRepository.findById(TAG_TEST_ID)).thenReturn(TestServiceDataUtil.getValidTag());
         TagDTO finedTagDTO = tagService.findById(TAG_TEST_ID);
         assertEquals(finedTagDTO, TestServiceDataUtil.getValidTagDTO());
@@ -73,13 +69,11 @@ class TagServiceTest {
     }
 
     @Test
-    void deleteById_givenValidId_returnsSuccessResponseDTO() throws GiftCertificateServiceException {
+    void deleteById_givenValidId() {
         Tag validTag = TestServiceDataUtil.getValidTag();
         when(tagRepository.findById(TAG_TEST_ID)).thenReturn(validTag);
         when(tagRepository.delete(validTag)).thenReturn(ONE_RESULT);
-        SuccessResponseDTO successResponseDTO = tagService.deleteById(TAG_TEST_ID);
-        assertThat(successResponseDTO).isNotNull();
-        assertEquals(successResponseDTO.getCode(), ResponseCode.DELETE.getCode());
+        tagService.deleteById(TAG_TEST_ID);
     }
 
     @Test
@@ -93,7 +87,7 @@ class TagServiceTest {
     }
 
     @Test
-    void getAllByPageSorted_returnsSortedTagDTOs() throws GiftCertificateServiceException {
+    void getAllByPageSorted_returnsSortedTagDTOs() {
         when(tagRepository.getAllByPageSorted(0, PaginationUtil.ITEMS_BY_PAGE)).
                 thenReturn(TestServiceDataUtil.getValidTags(TestServiceDataUtil.COUNT_TEST_TAG_LIST));
         List<TagDTO> finedTagDTOList = tagService.getAllByPageSorted(1);
@@ -101,7 +95,7 @@ class TagServiceTest {
     }
 
     @Test
-    void getAllSorted_returnsSortedTagDTOs() throws GiftCertificateServiceException {
+    void getAllSorted_returnsSortedTagDTOs() {
         when(tagRepository.getAllSorted()).
                 thenReturn(TestServiceDataUtil.getValidTags(TestServiceDataUtil.COUNT_TEST_TAG_LIST));
         List<TagDTO> finedTagDTOList = tagService.getAllSorted();

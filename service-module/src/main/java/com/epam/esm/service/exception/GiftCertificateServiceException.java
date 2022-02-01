@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @Setter
 @Builder
-public class GiftCertificateServiceException extends Exception {
+public class GiftCertificateServiceException extends RuntimeException {
 
     private ErrorResponseDTO errorResponseDTO;
     private HttpStatus responseHttpStatus = HttpStatus.BAD_REQUEST;

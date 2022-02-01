@@ -5,12 +5,12 @@ import com.epam.esm.repository.model.Tag;
 import com.epam.esm.service.TagService;
 import com.epam.esm.service.exception.GiftCertificateServiceException;
 import com.epam.esm.service.model.ResponseCode;
-import com.epam.esm.service.model.SuccessResponseDTO;
 import com.epam.esm.service.model.TagDTO;
 import com.epam.esm.service.util.PaginationUtil;
 import com.epam.esm.service.util.ResponseDTOUtil;
 import com.epam.esm.service.util.TagUtil;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -25,22 +25,20 @@ public class TagServiceImpl implements TagService {
     private TagRepository tagRepository;
 
     @Override
-    public SuccessResponseDTO create(TagDTO tagDTO) throws GiftCertificateServiceException {
+    public void create(TagDTO tagDTO) {
         validation(tagDTO);
         if (tagRepository.findByName(tagDTO.getName()) != null) {
             throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
                     ResponseCode.NOT_CREATE, "tag by name: " + tagDTO.getName() + " already exists"));
         }
-        if (tagRepository.add(TagUtil.convert(tagDTO)) != null) {
-            return ResponseDTOUtil.getSuccessResponseDTO(
-                    ResponseCode.CREATE);
+        if (tagRepository.add(TagUtil.convert(tagDTO)) == null) {
+            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                    ResponseCode.NOT_CREATE));
         }
-        throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
-                ResponseCode.NOT_CREATE));
     }
 
     @Override
-    public TagDTO findById(Long id) throws GiftCertificateServiceException {
+    public TagDTO findById(Long id) {
         validation(id);
         Tag tag = tagRepository.findById(id);
         if (tag != null) {
@@ -51,23 +49,26 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public SuccessResponseDTO deleteById(Long id) throws GiftCertificateServiceException {
+    public void deleteById(Long id) {
         validation(id);
         Tag tag = tagRepository.findById(id);
         if (tag == null) {
             throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
                     ResponseCode.NOT_FOUND, "for id=" + id));
         }
-        if (tagRepository.delete(tag) == RESULT_ONE_RECORD) {
-            return ResponseDTOUtil.getSuccessResponseDTO(
-                    ResponseCode.DELETE);
+        try {
+            if (tagRepository.delete(tag) != RESULT_ONE_RECORD) {
+                throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                        ResponseCode.NOT_DELETE));
+            }
+        } catch (DataIntegrityViolationException e) {
+            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                    ResponseCode.NOT_DELETE, "for id=" + id + " entity has dependencies"));
         }
-        throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
-                ResponseCode.NOT_DELETE));
     }
 
     @Override
-    public List<TagDTO> getAllByPageSorted(Integer page) throws GiftCertificateServiceException {
+    public List<TagDTO> getAllByPageSorted(Integer page) {
         validation(page);
         int startPosition = PaginationUtil.getPositionByPage(page);
         List<Tag> tags = tagRepository.getAllByPageSorted(startPosition, PaginationUtil.ITEMS_BY_PAGE);
@@ -75,12 +76,12 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public List<TagDTO> getAllSorted() throws GiftCertificateServiceException {
+    public List<TagDTO> getAllSorted() {
         List<Tag> tags = tagRepository.getAllSorted();
         return convertResults(tags);
     }
 
-    private List<TagDTO> convertResults(List<Tag> tags) throws GiftCertificateServiceException {
+    private List<TagDTO> convertResults(List<Tag> tags) {
         if (!tags.isEmpty()) {
             return tags.stream().map(TagUtil::convert).collect(Collectors.toList());
         }
@@ -88,7 +89,7 @@ public class TagServiceImpl implements TagService {
                 ResponseCode.NOT_FOUND));
     }
 
-    private void validation(Integer page) throws GiftCertificateServiceException {
+    private void validation(Integer page) {
         String errorMessage = null;
         if (page == null) {
             errorMessage = "page can't be empty";
@@ -103,7 +104,7 @@ public class TagServiceImpl implements TagService {
         }
     }
 
-    private void validation(Long id) throws GiftCertificateServiceException {
+    private void validation(Long id) {
         String errorMessage = null;
         if (id == null) {
             errorMessage = "id can't be empty";
@@ -118,7 +119,7 @@ public class TagServiceImpl implements TagService {
         }
     }
 
-    private void validation(TagDTO tagDTO) throws GiftCertificateServiceException {
+    private void validation(TagDTO tagDTO) {
         String errorMessage = null;
         if (tagDTO.getName() == null || tagDTO.getName().equals("")) {
             errorMessage = "tag name can't be empty";

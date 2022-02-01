@@ -1,7 +1,6 @@
 package com.epam.esm.app.controller;
 
 import com.epam.esm.service.TagService;
-import com.epam.esm.service.exception.GiftCertificateServiceException;
 import com.epam.esm.service.model.TagDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,13 +27,11 @@ public class TagController {
      * controller for create new tag
      *
      * @param tagDTO - object contain new tag model
-     * @return SuccessResponseDTO
      */
     @PostMapping
-    public ResponseEntity<Object> createTag(@RequestBody TagDTO tagDTO) throws GiftCertificateServiceException {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(tagService.create(tagDTO));
+    @ResponseStatus(HttpStatus.CREATED)
+    public void createTag(@RequestBody TagDTO tagDTO) {
+        tagService.create(tagDTO);
     }
 
     /**
@@ -44,7 +41,7 @@ public class TagController {
      * @return list TagDTO
      */
     @GetMapping
-    public ResponseEntity<Object> getTagsByPageSorted(@RequestParam(name = "page", required = false) Integer page) throws GiftCertificateServiceException {
+    public ResponseEntity<Object> getTagsByPageSorted(@RequestParam(name = "page", required = false) Integer page) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(tagService.getAllByPageSorted(page));
@@ -57,7 +54,7 @@ public class TagController {
      * @return TagDTO
      */
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Object> getTagById(@PathVariable(name = "id") Long id) throws GiftCertificateServiceException {
+    public ResponseEntity<Object> getTagById(@PathVariable(name = "id") Long id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(tagService.findById(id));
@@ -67,12 +64,10 @@ public class TagController {
      * controller for delete tag
      *
      * @param id - id number gift tag in database
-     * @return SuccessResponseDTO
      */
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Object> deleteTagById(@PathVariable(name = "id") Long id) throws GiftCertificateServiceException {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(tagService.deleteById(id));
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTagById(@PathVariable(name = "id") Long id) {
+        tagService.deleteById(id);
     }
 }

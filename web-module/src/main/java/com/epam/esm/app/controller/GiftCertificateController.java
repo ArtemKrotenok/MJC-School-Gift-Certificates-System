@@ -1,7 +1,6 @@
 package com.epam.esm.app.controller;
 
 import com.epam.esm.service.GiftCertificateService;
-import com.epam.esm.service.exception.GiftCertificateServiceException;
 import com.epam.esm.service.model.GiftCertificateDTO;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -28,26 +27,22 @@ public class GiftCertificateController {
      * controller for create new gift certificate
      *
      * @param giftCertificateDTO - object contain new gift certificate model
-     * @return SuccessResponseDTO
      */
     @PostMapping
-    public ResponseEntity<Object> createGiftCertificate(@RequestBody GiftCertificateDTO giftCertificateDTO) throws GiftCertificateServiceException {
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(giftCertificateService.create(giftCertificateDTO));
+    @ResponseStatus(HttpStatus.CREATED)
+    public void createGiftCertificate(@RequestBody GiftCertificateDTO giftCertificateDTO) {
+        giftCertificateService.create(giftCertificateDTO);
     }
 
     /**
      * controller for update gift certificate
      *
      * @param giftCertificateDTO - object contain update data for gift certificate model
-     * @return SuccessResponseDTO
      */
     @PutMapping
-    public ResponseEntity<Object> updateGiftCertificate(@RequestBody GiftCertificateDTO giftCertificateDTO) throws GiftCertificateServiceException {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(giftCertificateService.update(giftCertificateDTO));
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateGiftCertificate(@RequestBody GiftCertificateDTO giftCertificateDTO) {
+        giftCertificateService.update(giftCertificateDTO);
     }
 
     /**
@@ -67,7 +62,7 @@ public class GiftCertificateController {
             @RequestParam(name = "tag", required = false) String tag,
             @RequestParam(name = "name", required = false) String name,
             @RequestParam(name = "description", required = false) String description
-    ) throws GiftCertificateServiceException {
+    ) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(giftCertificateService.search(page, tag, name, description));
@@ -80,7 +75,7 @@ public class GiftCertificateController {
      * @return GiftCertificateDTO
      */
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Object> getGiftCertificateById(@PathVariable(name = "id") Long id) throws GiftCertificateServiceException {
+    public ResponseEntity<Object> getGiftCertificateById(@PathVariable(name = "id") Long id) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(giftCertificateService.findById(id));
@@ -90,12 +85,10 @@ public class GiftCertificateController {
      * controller for delete gift certificate
      *
      * @param id - id number gift certificate in database
-     * @return SuccessResponseDTO
      */
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Object> deleteGiftCertificateById(@PathVariable(name = "id") Long id) throws GiftCertificateServiceException {
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(giftCertificateService.deleteById(id));
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteGiftCertificateById(@PathVariable(name = "id") Long id) {
+        giftCertificateService.deleteById(id);
     }
 }

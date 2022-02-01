@@ -6,12 +6,12 @@ import com.epam.esm.service.GiftCertificateService;
 import com.epam.esm.service.exception.GiftCertificateServiceException;
 import com.epam.esm.service.model.GiftCertificateDTO;
 import com.epam.esm.service.model.ResponseCode;
-import com.epam.esm.service.model.SuccessResponseDTO;
 import com.epam.esm.service.util.GiftCertificateUtil;
 import com.epam.esm.service.util.PaginationUtil;
 import com.epam.esm.service.util.ResponseDTOUtil;
 import com.epam.esm.service.util.TagUtil;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -27,34 +27,36 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private GiftCertificateRepository giftCertificateRepository;
 
     @Override
-    public SuccessResponseDTO create(GiftCertificateDTO giftCertificateDTO) throws GiftCertificateServiceException {
+    public void create(GiftCertificateDTO giftCertificateDTO) {
         validation(giftCertificateDTO);
-        if (giftCertificateRepository.add(GiftCertificateUtil.convert(giftCertificateDTO)) != null) {
-            return ResponseDTOUtil.getSuccessResponseDTO(
-                    ResponseCode.CREATE);
+        if (giftCertificateRepository.add(GiftCertificateUtil.convert(giftCertificateDTO)) == null) {
+            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                    ResponseCode.NOT_CREATE));
         }
-        throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
-                ResponseCode.NOT_CREATE));
     }
 
     @Override
-    public SuccessResponseDTO deleteById(Long id) throws GiftCertificateServiceException {
+    public void deleteById(Long id) {
         validation(id);
         GiftCertificate giftCertificate = giftCertificateRepository.findById(id);
         if (giftCertificate == null) {
             throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
                     ResponseCode.NOT_FOUND, "for id=" + id));
         }
-        if (giftCertificateRepository.delete(giftCertificate) == RESULT_ONE_RECORD) {
-            return ResponseDTOUtil.getSuccessResponseDTO(
-                    ResponseCode.DELETE);
+        try {
+            if (giftCertificateRepository.delete(giftCertificate) != RESULT_ONE_RECORD) {
+                throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                        ResponseCode.NOT_DELETE));
+            }
+        } catch (
+                DataIntegrityViolationException e) {
+            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                    ResponseCode.NOT_DELETE, "for id=" + id + " entity has dependencies"));
         }
-        throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
-                ResponseCode.NOT_DELETE));
     }
 
     @Override
-    public SuccessResponseDTO update(GiftCertificateDTO giftCertificateDTO) throws GiftCertificateServiceException {
+    public void update(GiftCertificateDTO giftCertificateDTO) {
         Long updateIdGiftCertificate = giftCertificateDTO.getId();
         validation(updateIdGiftCertificate);
         GiftCertificate giftCertificate = giftCertificateRepository.findById(updateIdGiftCertificate);
@@ -63,15 +65,15 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                     ResponseCode.NOT_FOUND, "for id=" + updateIdGiftCertificate));
         }
         giftCertificate = getEntityForUpdate(giftCertificate, giftCertificateDTO);
-        if (giftCertificateRepository.update(giftCertificate) == RESULT_ONE_RECORD) {
-            return ResponseDTOUtil.getSuccessResponseDTO(ResponseCode.UPDATE);
+        if (giftCertificateRepository.update(giftCertificate) != RESULT_ONE_RECORD) {
+            throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
+                    ResponseCode.NOT_UPDATE));
         }
-        throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
-                ResponseCode.NOT_UPDATE));
+
     }
 
     @Override
-    public GiftCertificateDTO findById(Long id) throws GiftCertificateServiceException {
+    public GiftCertificateDTO findById(Long id) {
         validation(id);
         GiftCertificate giftCertificate = giftCertificateRepository.findById(id);
         if (giftCertificate != null) {
@@ -82,7 +84,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public List<GiftCertificateDTO> search(Integer page, String tag, String name, String description) throws GiftCertificateServiceException {
+    public List<GiftCertificateDTO> search(Integer page, String tag, String name, String description) {
         validation(page);
         int startPosition = PaginationUtil.getPositionByPage(page);
         List<GiftCertificate> giftCertificates = giftCertificateRepository.search(startPosition, PaginationUtil.ITEMS_BY_PAGE, tag, name, description);
@@ -120,7 +122,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return giftCertificate;
     }
 
-    private void validation(Long id) throws GiftCertificateServiceException {
+    private void validation(Long id) {
         String errorMessage = null;
         if (id == null) {
             errorMessage = "id can't be empty";
@@ -135,7 +137,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
     }
 
-    private void validation(Integer page) throws GiftCertificateServiceException {
+    private void validation(Integer page) {
         String errorMessage = null;
         if (page == null) {
             errorMessage = "page can't be empty";
@@ -150,7 +152,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
     }
 
-    private void validation(GiftCertificateDTO giftCertificateDTO) throws GiftCertificateServiceException {
+    private void validation(GiftCertificateDTO giftCertificateDTO) {
         StringBuilder errorMessage = new StringBuilder();
 
         if (giftCertificateDTO.getName() == null || giftCertificateDTO.getName().equals("")) {
@@ -174,7 +176,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         }
     }
 
-    private List<GiftCertificateDTO> convertResults(List<GiftCertificate> giftCertificates) throws GiftCertificateServiceException {
+    private List<GiftCertificateDTO> convertResults(List<GiftCertificate> giftCertificates) {
         if (!giftCertificates.isEmpty()) {
             return giftCertificates.stream().map(GiftCertificateUtil::convert).collect(Collectors.toList());
         }

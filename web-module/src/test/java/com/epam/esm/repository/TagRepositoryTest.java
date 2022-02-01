@@ -25,7 +25,7 @@ class TagRepositoryTest {
     public static final String TEST_TAG_NAME_EXIST_IN_DB = "sport";
     public static final String TEST_TAG_NAME_NO_EXIST_IN_DB = "extreme";
     public static final long TEST_TAG_ID_EXIST_IN_DB = 3L;
-    public static final long TEST_TAG_ID_FOR_DELETE = 8L;
+    public static final long TEST_TAG_ID_FOR_DELETE = 9L;
     public static final long TEST_TAG_ID_NO_EXIST_IN_DB = 30L;
     public static final int START_POSITION = 0;
     public static final int ITEMS_BY_PAGE = 3;

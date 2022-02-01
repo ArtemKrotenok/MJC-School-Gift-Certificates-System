@@ -27,7 +27,7 @@
         <mockito-core.version>4.2.0</mockito-core.version>
         <mockito-junit-jupiter.version>4.2.0</mockito-junit-jupiter.version>
         <assertj-core.version>3.22.0</assertj-core.version>
-        <h2.version>2.0.206</h2.version>
+        <h2.version>2.1.210</h2.version>
     </properties>
 
     <dependencies>
@@ -117,5 +117,4 @@
         </dependency>
 
     </dependencies>
-
 </project>

@@ -1,20 +1,18 @@
 package com.epam.esm.service;
 
-import com.epam.esm.service.exception.GiftCertificateServiceException;
 import com.epam.esm.service.model.GiftCertificateDTO;
-import com.epam.esm.service.model.SuccessResponseDTO;
 
 import java.util.List;
 
 public interface GiftCertificateService {
 
-    SuccessResponseDTO create(GiftCertificateDTO giftCertificateDTO) throws GiftCertificateServiceException;
+    void create(GiftCertificateDTO giftCertificateDTO);
 
-    SuccessResponseDTO deleteById(Long id) throws GiftCertificateServiceException;
+    void deleteById(Long id);
 
-    GiftCertificateDTO findById(Long id) throws GiftCertificateServiceException;
+    GiftCertificateDTO findById(Long id);
 
-    SuccessResponseDTO update(GiftCertificateDTO giftCertificateDTO) throws GiftCertificateServiceException;
+    void update(GiftCertificateDTO giftCertificateDTO);
 
-    List<GiftCertificateDTO> search(Integer page, String tag, String name, String description) throws GiftCertificateServiceException;
+    List<GiftCertificateDTO> search(Integer page, String tag, String name, String description);
 }
