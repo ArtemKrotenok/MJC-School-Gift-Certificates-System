@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface GiftCertificateService {
 
-    void create(GiftCertificateDTO giftCertificateDTO);
+    GiftCertificateDTO create(GiftCertificateDTO giftCertificateDTO);
 
     void deleteById(Long id);
 

@@ -27,12 +27,14 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     private GiftCertificateRepository giftCertificateRepository;
 
     @Override
-    public void create(GiftCertificateDTO giftCertificateDTO) {
+    public GiftCertificateDTO create(GiftCertificateDTO giftCertificateDTO) {
         validation(giftCertificateDTO);
-        if (giftCertificateRepository.add(GiftCertificateUtil.convert(giftCertificateDTO)) == null) {
+        Long createId = giftCertificateRepository.add(GiftCertificateUtil.convert(giftCertificateDTO));
+        if (createId == null) {
             throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
                     ResponseCode.NOT_CREATE));
         }
+        return GiftCertificateUtil.convert(giftCertificateRepository.findById(createId));
     }
 
     @Override
@@ -41,7 +43,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         GiftCertificate giftCertificate = giftCertificateRepository.findById(id);
         if (giftCertificate == null) {
             throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
-                    ResponseCode.NOT_FOUND, "for id=" + id));
+                    ResponseCode.NOT_FOUND, "for id=" + id), HttpStatus.NOT_FOUND);
         }
         try {
             if (giftCertificateRepository.delete(giftCertificate) != RESULT_ONE_RECORD) {
@@ -62,7 +64,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         GiftCertificate giftCertificate = giftCertificateRepository.findById(updateIdGiftCertificate);
         if (giftCertificate == null) {
             throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
-                    ResponseCode.NOT_FOUND, "for id=" + updateIdGiftCertificate));
+                    ResponseCode.NOT_FOUND, "for id=" + updateIdGiftCertificate), HttpStatus.NOT_FOUND);
         }
         giftCertificate = getEntityForUpdate(giftCertificate, giftCertificateDTO);
         if (giftCertificateRepository.update(giftCertificate) != RESULT_ONE_RECORD) {
@@ -80,7 +82,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             return GiftCertificateUtil.convert(giftCertificate);
         }
         throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
-                ResponseCode.NOT_FOUND, "for id=" + id));
+                ResponseCode.NOT_FOUND, "for id=" + id), HttpStatus.NOT_FOUND);
     }
 
     @Override

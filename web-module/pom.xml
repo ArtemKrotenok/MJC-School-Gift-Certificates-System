@@ -15,6 +15,7 @@
 
     <properties>
         <jackson-databind.version>2.13.1</jackson-databind.version>
+        <failOnMissingWebXml>false</failOnMissingWebXml>
     </properties>
 
     <dependencies>

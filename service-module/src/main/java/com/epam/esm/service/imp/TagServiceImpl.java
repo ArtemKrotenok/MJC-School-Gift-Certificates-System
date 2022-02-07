@@ -54,7 +54,7 @@ public class TagServiceImpl implements TagService {
         Tag tag = tagRepository.findById(id);
         if (tag == null) {
             throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
-                    ResponseCode.NOT_FOUND, "for id=" + id));
+                    ResponseCode.NOT_FOUND, "for id=" + id), HttpStatus.NOT_FOUND);
         }
         try {
             if (tagRepository.delete(tag) != RESULT_ONE_RECORD) {
@@ -86,7 +86,7 @@ public class TagServiceImpl implements TagService {
             return tags.stream().map(TagUtil::convert).collect(Collectors.toList());
         }
         throw new GiftCertificateServiceException(ResponseDTOUtil.getErrorResponseDTO(
-                ResponseCode.NOT_FOUND));
+                ResponseCode.NOT_FOUND), HttpStatus.NOT_FOUND);
     }
 
     private void validation(Integer page) {

@@ -27,11 +27,13 @@ public class GiftCertificateController {
      * controller for create new gift certificate
      *
      * @param giftCertificateDTO - object contain new gift certificate model
+     * @return GiftCertificateDTO
      */
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public void createGiftCertificate(@RequestBody GiftCertificateDTO giftCertificateDTO) {
-        giftCertificateService.create(giftCertificateDTO);
+    public ResponseEntity<Object> createGiftCertificate(@RequestBody GiftCertificateDTO giftCertificateDTO) {
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(giftCertificateService.create(giftCertificateDTO));
     }
 
     /**
