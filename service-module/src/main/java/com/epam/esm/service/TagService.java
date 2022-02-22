@@ -6,13 +6,15 @@ import java.util.List;
 
 public interface TagService {
 
-    void create(TagDTO tagDTO);
+    TagDTO create(TagDTO tagDTO);
 
-    List<TagDTO> getAllByPageSorted(Integer page);
+    TagDTO findById(long id);
 
-    List<TagDTO> getAllSorted();
+    void deleteById(long id);
 
-    TagDTO findById(Long id);
+    long getCount();
 
-    void deleteById(Long id);
+    List<TagDTO> getAllByPageSorted(int page, int size);
+
+    TagDTO findSuper();
 }
