@@ -1,13 +1,15 @@
 package com.epam.esm.service;
 
-import com.epam.esm.repository.model.GiftCertificate;
+import com.epam.esm.repository.model.Certificate;
 import com.epam.esm.repository.model.Tag;
-import com.epam.esm.service.model.GiftCertificateDTO;
+import com.epam.esm.service.model.CertificateDTO;
 import com.epam.esm.service.model.TagDTO;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -45,8 +47,8 @@ public class TestServiceDataUtil {
                 .build();
     }
 
-    public static GiftCertificate getValidGiftCertificate() {
-        return GiftCertificate.builder()
+    public static Certificate getValidCertificate() {
+        return Certificate.builder()
                 .id(GIFT_CERTIFICATE_TEST_ID)
                 .name(GIFT_CERTIFICATE_TEST_NAME)
                 .description(GIFT_CERTIFICATE_TEST_DESCRIPTION)
@@ -54,12 +56,12 @@ public class TestServiceDataUtil {
                 .createDate(GIFT_CERTIFICATE_TEST_CREATE_DATE)
                 .lastUpdateDate(GIFT_CERTIFICATE_TEST_LAST_UPDATE_DATE)
                 .price(GIFT_CERTIFICATE_TEST_PRICE)
-                .tags(getValidTags(COUNT_TEST_TAG_LIST))
+                .tags(new HashSet<>(getValidTags(COUNT_TEST_TAG_LIST)))
                 .build();
     }
 
-    public static GiftCertificateDTO getValidGiftCertificateDTO() {
-        return GiftCertificateDTO.builder()
+    public static CertificateDTO getValidCertificateDTO() {
+        return CertificateDTO.builder()
                 .id(GIFT_CERTIFICATE_TEST_ID)
                 .name(GIFT_CERTIFICATE_TEST_NAME)
                 .description(GIFT_CERTIFICATE_TEST_DESCRIPTION)
@@ -67,7 +69,7 @@ public class TestServiceDataUtil {
                 .createDate(GIFT_CERTIFICATE_TEST_CREATE_DATE_STRING)
                 .lastUpdateDate(GIFT_CERTIFICATE_TEST_LAST_UPDATE_DATE_STRING)
                 .price(GIFT_CERTIFICATE_TEST_PRICE_STRING)
-                .tags(getValidTagDTOs(COUNT_TEST_TAG_DTO_LIST))
+                .tags(new HashSet<>(getValidTagDTOs(COUNT_TEST_TAG_DTO_LIST)))
                 .build();
     }
 
@@ -79,11 +81,11 @@ public class TestServiceDataUtil {
         return Stream.generate(TestServiceDataUtil::getValidTagDTO).limit(count).collect(Collectors.toList());
     }
 
-    public static List<GiftCertificate> getValidGiftCertificates(int count) {
-        return Stream.generate(TestServiceDataUtil::getValidGiftCertificate).limit(count).collect(Collectors.toList());
+    public static List<Certificate> getValidCertificates(int count) {
+        return Stream.generate(TestServiceDataUtil::getValidCertificate).limit(count).collect(Collectors.toList());
     }
 
-    public static List<GiftCertificateDTO> getValidGiftCertificateDTOs(int count) {
-        return Stream.generate(TestServiceDataUtil::getValidGiftCertificateDTO).limit(count).collect(Collectors.toList());
+    public static List<CertificateDTO> getValidCertificateDTOs(int count) {
+        return Stream.generate(TestServiceDataUtil::getValidCertificateDTO).limit(count).collect(Collectors.toList());
     }
 }

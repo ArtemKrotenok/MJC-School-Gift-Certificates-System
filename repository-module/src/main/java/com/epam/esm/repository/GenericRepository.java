@@ -2,17 +2,19 @@ package com.epam.esm.repository;
 
 import java.util.List;
 
-public interface GenericRepository<T> {
+public interface GenericRepository<I, T> {
 
-    List<T> findAll();
+    T findById(I id);
 
-    T findById(Long id);
+    void add(T entity);
 
-    Long add(T object);
+    void update(T entity);
 
-    int update(T object);
+    void delete(T entity);
 
-    int delete(T object);
+    long getCount();
 
-    long count();
+    List<T> getItemsByPage(int startPosition, int itemsByPage);
+
+    void flush();
 }

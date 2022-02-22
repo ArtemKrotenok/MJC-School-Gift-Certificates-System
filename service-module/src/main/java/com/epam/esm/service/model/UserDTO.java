@@ -7,11 +7,13 @@ import org.springframework.hateoas.RepresentationModel;
 @Setter
 @Builder
 @ToString
-@EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-public class TagDTO extends RepresentationModel<TagDTO> {
+public class UserDTO extends RepresentationModel<UserDTO> {
 
     private Long id;
-    private String name;
+    private String login;
+    private String firstname;
+    private String surname;
+
 }

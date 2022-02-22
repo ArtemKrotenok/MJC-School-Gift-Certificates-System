@@ -7,11 +7,13 @@ import org.springframework.hateoas.RepresentationModel;
 @Setter
 @Builder
 @ToString
-@EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-public class TagDTO extends RepresentationModel<TagDTO> {
+public class OrderDTO extends RepresentationModel<OrderDTO> {
 
     private Long id;
-    private String name;
+    private UserDTO user;
+    private CertificateDTO certificate;
+    private String orderDate;
+    private String orderPrice;
 }
